@@ -1,0 +1,87 @@
+{% extends "home/sub_header.html" %}
+{%block content %}
+
+{% load static %}
+
+
+
+  <section id="home" class="w3l-banner py-5">
+    <div class="container py-lg-5 py-md-4 mt-lg-0 mt-md-4">
+      <div class="w3l-banner-content py-lg-5 py-4 mt-md-4">
+        <div class="pt-md-5 pt-lg-4 mt-4 align-items-lg-center">
+          <div class="bannerhny-info">
+
+            <h3 class="" style="font-size: 60px; color: #ffffff; font-weight: bold; font-family: 'cursive';">Navigate with Confidence.</h3>
+
+
+              <h6 class="title-subhny mb-3">Unleash the Power of Precision with Our Online GPS Tracking</h6>
+            <a class="btn btn-style btn-outline-light mt-sm-5 mt-4" href="about.html">
+              Read More <span class="fa fa-long-arrow-right ml-3" aria-hidden="true"></span></a>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<section class="w3l-about-ab pt-lg-3" id="about" style="background-image: url('{% static 'home/assets/images/banner3.jpg' %}');
+background-size: cover; /* Ensure the image covers the entire section */
+height: auto; /* Set the height to auto to fit the image content */
+width: 100%; /* Set the desired width here */">
+    <div class="midd-w3 py-5">
+        <div class="container py-lg-5 py-md-4 py-2">
+            <div class="title-content text-left">
+                <h6 class="title-subhny">Who We Are</h6>
+                <h3 class="title-w3l mb-sm-5 mb-4 pb-lg-2">What We Offer To Highest <br> Quality Services</h3>
+            </div>
+            <div class="row">
+                <div class="col-lg-5 left-wthree-img pr-lg-4">
+                    <div class="imgw3l-ab mb-md-5 mb-3">
+                        <img src="assets/images/ab1.jpg" alt="" class="radius-image img-fluid">
+                    </div>
+                </div>
+                <div class="col-lg-7 pl-lg-5 align-self mt-lg-0 mt-4">
+                    <h5 class="color-3 mb-3 pr-lg-5">Discover a new era of navigation excellence with our cutting-edge Online GPS Tracking Platform.
+                    </h5>
+                    <p class="pr-lg-5">Embrace precision and confidence as you effortlessly navigate through every journey. Our advanced technology ensures real-time accuracy, empowering you with the ultimate control over your routes. Experience the freedom to explore, knowing you're backed by the unmatched reliability of our GPS tracking solution. Navigate with confidence – where precision meets peace of mind!
+                    </p>
+                    \
+                    <a href="about.html" class="btn btn-style btn-primary mt-lg-5 mt-4">Read More <span
+                            class="fa fa-long-arrow-right ml-3" aria-hidden="true"></span></a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+  <section class="home-w3l-content py-5">
+    <div class="container">
+      <div class="row home-w3l-content-grids">
+        <div class="col-lg-4 home-w3l-content-grid mt-lg-0 mt-4">
+          <h5 class="">Call Our Support</h5>
+          <p class="home-w3l-content-grid-inf">
+            24 / 7 Support Line : <span class="fa fa-phone mr-1"></span> <a href="tel:+1(21) 234 4567">+1(21) 234 557
+              4567</a>
+          </p>
+
+        </div>
+        <div class="col-lg-4 home-w3l-content-grid px-lg-4 mt-lg-0 mt-4">
+          <h5 class="">Our Location</h5>
+          <p>Shipper, #2214 Honey street, NY - 62617.</p>
+        </div>
+        <div class="col-lg-4 home-w3l-content-grid mt-lg-0 mt-4">
+          <h5 class="">Our Newsletter</h5>
+          <form action="#" class="subscribe d-flex text-lg-right" method="post">
+            <input type="email" name="email" placeholder="Email Address" required="">
+            <button class="btn btn-style btn-primary">Subscibe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+{%endblock%}
