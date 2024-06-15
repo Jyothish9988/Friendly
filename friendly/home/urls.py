@@ -19,4 +19,9 @@ urlpatterns = [
 
     path("search/", SearchResultsView.as_view(), name="search_results"),
 
+    path('send_friend_request/<str:to_username>/', views.send_friend_request, name='send_friend_request'),
+
+    path('friend_requests_view', views.friend_requests_view, name='friend_requests_view'),
+    path('accept-friend-request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
+
 ]

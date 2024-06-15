@@ -38,13 +38,20 @@
                             </div>
                             <div class="col-md-7 col-sm-7">
                                 <h5><a href="#" class="profile-link">{{ user.full_name }}</a></h5>
+                                <h4>@{{ user.username }}</h4>
                                 <p>{{ user.bio }}</p>
+                                
                                 <!-- Assuming you have a location or distance field -->
                                 <p class="text-muted">{{ user.location }}</p>
                             </div>
-                            <div class="col-md-3 col-sm-3">
-                                <button class="btn btn-primary pull-right">Add Friend</button>
-                            </div>
+<div class="col-md-3 col-sm-3">
+    <form action="{% url 'send_friend_request' to_username=user.username %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary pull-right">Send Request</button>
+    </form>
+</div>
+
+
                         </div>
                     </div>
                     {% endfor %}

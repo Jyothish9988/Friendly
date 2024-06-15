@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Friend List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            margin-top: 20px;
+            background: #FAFAFA;
+        }
+        .people-nearby .nearby-user {
+            padding: 20px 0;
+            border-top: 1px solid #f1f2f2;
+            border-bottom: 1px solid #f1f2f2;
+            margin-bottom: 20px;
+        }
+        img.profile-photo-lg {
+            height: 80px;
+            width: 80px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="people-nearby">
+                    {% if friend_requests_with_profiles %}
+                        {% for request in friend_requests_with_profiles %}
+                            <div class="nearby-user">
+                                <div class="row">
+                                    <div class="col-md-2 col-sm-2">
+                                        {% if request.to_user_profile and request.to_user_profile.profile_picture %}
+                                            <img src="{{ request.to_user_profile.profile_picture.url }}" alt="user" class="profile-photo-lg">
+                                        {% else %}
+                                            <img src="path/to/default/profile/picture.jpg" alt="user" class="profile-photo-lg">
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-7 col-sm-7">
+                                        <h5><a href="#" class="profile-link">{{ request.from_user.username }}</a></h5>
+                                        {% if request.to_user_profile %}
+                                            <p>{{ request.to_user_profile.full_name }}</p>
+                                            <p>{{ request.to_user_profile.bio }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3 col-sm-3">
+                                        {% if not request.is_accepted %}
+                                            <a href="{% url 'accept_friend_request' request.id %}" class="btn btn-primary pull-right">Accept</a>
+                                        {% else %}
+                                            <button class="btn btn-secondary pull-right" disabled>Accepted</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No friend requests</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+</body>
+</html>

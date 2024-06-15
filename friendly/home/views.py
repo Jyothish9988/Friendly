@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import GalleryUploadForm, VideoUploadForm, LocationForm, PostForm
 from django.contrib import messages
-from .models import Post, UserProfile
+from .models import Post, UserProfile,FriendRequest
 from django.db.models import Q
 
 
@@ -73,12 +73,13 @@ class SearchResultsView(ListView):
     model = UserProfile
     template_name = "search_result.html"
 
-    def get_queryset(self):  # new
+    def get_queryset(self):
         query = self.request.GET.get("q")
-        object_list = UserProfile.objects.filter(
-            Q(name__icontains=query) | Q(state__icontains=query)
-        )
-        return object_list
+        if query:
+            return UserProfile.objects.filter(
+                Q(username__username__icontains=query) | Q(full_name__icontains=query)
+            )
+        return UserProfile.objects.none()
 
 
 @login_required(login_url='/user_login')
@@ -88,7 +89,7 @@ def profile(request):
     profile = get_object_or_404(UserProfile, username=user.id)
     details = UserProfile.objects.filter(username=user)
 
-    if not profile.full_name or not profile.email or not profile.phone_number:
+    if not profile.full_name or not profile.phone_number:
         messages.error(request, 'Please update your profile details.')
     posts = Post.objects.filter(is_public=True).order_by('-uploaded_at')
 
@@ -213,6 +214,61 @@ def profile_update(request, user_id):
         messages.success(request, 'Profile updated successfully!')
         return redirect('profile')
 
-    return render(request, 'profile_update.html', {
+    return render(request, 'profile.html', {
         'profile': profile,
     })
+
+
+# -----------------------------------friend req start------------------------
+@login_required
+def send_friend_request(request, to_username):
+    if request.method == 'POST':
+        # Get the user object by username
+        receiver_user = get_object_or_404(User, username=to_username)
+        existing_request = FriendRequest.objects.filter(from_user=request.user, to_user=receiver_user).exists()
+        if not existing_request and request.user != receiver_user:
+            FriendRequest.objects.create(from_user=request.user, to_user=receiver_user)
+    return redirect('dashboard')
+
+
+@login_required
+def friend_requests_view(request):
+    logged_in_username = request.user.username
+    friend_requests = FriendRequest.objects.filter(to_user__username=logged_in_username)
+
+    friend_requests_with_profiles = []
+    for fr in friend_requests:
+        try:
+            to_user_profile = UserProfile.objects.get(username=fr.to_user)
+            friend_requests_with_profiles.append({
+                'id': fr.id,  # Ensure the ID is included
+                'from_user': fr.from_user,
+                'to_user': fr.to_user,
+                'is_accepted': fr.is_accepted,
+                'created_at': fr.created_at,
+                'to_user_profile': to_user_profile
+            })
+        except UserProfile.DoesNotExist:
+            friend_requests_with_profiles.append({
+                'id': fr.id,  # Ensure the ID is included
+                'from_user': fr.from_user,
+                'to_user': fr.to_user,
+                'is_accepted': fr.is_accepted,
+                'created_at': fr.created_at,
+                'to_user_profile': None
+            })
+
+    return render(request, 'request.html', {'friend_requests_with_profiles': friend_requests_with_profiles})
+
+
+@login_required
+def accept_friend_request(request, request_id):
+    friend_request = get_object_or_404(FriendRequest, id=request_id, to_user=request.user)
+
+    if friend_request.is_accepted:
+        return redirect('friend_requests')
+
+    friend_request.is_accepted = True
+    friend_request.save()
+
+    return redirect('friend_requests')

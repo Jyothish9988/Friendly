@@ -43,12 +43,14 @@
                 <i class="fa-solid fa-circle-plus" data-target="#myModal" data-toggle="modal"></i>
                 
                 <i class="fa-brands fa-facebook-messenger"></i>
-                
-                <i class="fa-solid fa-bell"></i>
-                
+                                 <a href="{% url 'friend_requests_view' %}" class="logout-link">
+                   <i class="fa-solid fa-bell"></i>
+                </a>
+
+
                 <a href="{% url 'profile' %}">
                   <label><img src="{{ profile.profile_picture.url }}" alt="user"></label>
-                </a>   
+                </a>
                 
                 <a href="{% url 'user_logout' %}" class="logout-link">
                     <i class="fas fa-sign-out-alt"></i>

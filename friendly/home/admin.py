@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Post,UserProfile
+from .models import Post, UserProfile, FriendRequest
 
 admin.site.register(UserProfile)
 admin.site.register(Post)
+admin.site.register(FriendRequest)
 
