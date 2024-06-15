@@ -14,6 +14,6 @@ urlpatterns = [
     path('add/location/', views.add_location, name='add_location'),
     path('create/post/', views.create_post, name='create_post'),
 
-    path('profile/', views.profile, name='profile'),
-    path('profile/update/', views.profile_update, name='profile_update'),
+    path('profile', views.profile, name='profile'),
+    path('profile_update/<int:user_id>/', views.profile_update, name='profile_update'),
 ]

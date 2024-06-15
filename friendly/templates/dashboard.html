@@ -42,8 +42,8 @@
                 
                 <i class="fa-solid fa-bell"></i>
                 
-                <a href="{% url 'profile' %}">
-                  <label><img src="{% static 'Deploy/assets/images/OIP.jpg' %}" alt="user"></label>
+                <a href="{% url 'profile'%}">
+                  <label><img src="{{ profile.profile_picture.url }}" alt="user"></label>
                 </a>   
                 
                 <a href="{% url 'user_logout' %}" class="logout-link">
@@ -288,7 +288,7 @@
                         {% for post in posts %}
                                 <div class="post-container" id="post1">
                                     <div class="post-title">
-                                        <img src="images/user2.jpg" alt="user picture">
+                                        <img src="{{ profile.profile_picture.url }}" alt="user picture">
                                         <ul>
                                             <li><h3>{{ post.uploaded_by }}
                                                 {% comment %} <span> . 2 hours ago</span></h3> {% endcomment %}

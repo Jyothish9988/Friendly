@@ -2,6 +2,7 @@ from .forms import CreateUserForm, LoginForm, ProfileUpdate
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .forms import GalleryUploadForm, VideoUploadForm, LocationForm, PostForm
 from django.contrib import messages
 from .models import Post, UserProfile
@@ -49,8 +50,10 @@ def user_logout(request):
 
 @login_required(login_url='/user_login')
 def dashboard(request):
+    user_profile = request.user
     user = request.user
     profile = get_object_or_404(UserProfile, username=user)
+
 
     if not profile.full_name or not profile.email or not profile.phone_number:
         messages.error(request, 'Please update your profile details.')
@@ -66,7 +69,9 @@ def dashboard(request):
 @login_required(login_url='/user_login')
 def profile(request):
     user = request.user
+    user_profile = request.user
     profile = get_object_or_404(UserProfile, username=user)
+    details = UserProfile.objects.filter(username=user)
 
     if not profile.full_name or not profile.email or not profile.phone_number:
         messages.error(request, 'Please update your profile details.')
@@ -76,6 +81,8 @@ def profile(request):
         'profile': profile,
         'messages': messages.get_messages(request),
         'posts': posts,
+        'details': details,
+        'user_profile': user_profile,
     })
 
 
@@ -168,19 +175,28 @@ def create_post(request):
         form = PostForm()
     return render(request, 'create_post.html', {'form': form})
 
-@login_required(login_url='/user_login')
-def profile_update(request):
-    user_profile = request.user
+@login_required
+def profile_update(request, user_id):
+    user_instance = get_object_or_404(User, id=user_id)
+    profile = get_object_or_404(UserProfile, username=user_instance)
 
     if request.method == 'POST':
-        form = ProfileUpdate(request.POST, request.FILES, instance=user_profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('profile')  # Redirect to the profile page
-        else:
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        form = ProfileUpdate(instance=user_profile)
+        profile.full_name = request.POST.get('full_name')
+        profile.bio = request.POST.get('bio')
+        profile.gender = request.POST.get('gender')
+        profile.date_of_birth = request.POST.get('date_of_birth')
+        profile.email = request.POST.get('email')
+        profile.phone_number = request.POST.get('phone_number')
+        profile.save()
+        messages.success(request, 'Profile updated successfully!')
 
-    return render(request, 'profile.html', {'form': form})
+        if 'profile_picture' in request.FILES:
+            profile.profile_picture = request.FILES['profile_picture']
+
+        profile.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('profile')
+
+    return render(request, 'profile_update.html', {
+        'profile': profile,
+    })

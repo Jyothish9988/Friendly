@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     {% load static %}
     <link rel="stylesheet" href="{% static 'Profile/style.css' %}">
@@ -12,21 +13,32 @@
 <body>
 
 <div class="profile-container">
-    <div class="cover"></div>
+    <div class="cover">
+        <div class="logoBox">
+            <a class="navbar-brand" href="#">Friendly</a>
+        </div>
+    </div>
     <div class="profile-info">
-        <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80" alt="User Image">
+
+
+        <img src="{{ profile.profile_picture.url }}" alt="User Image">
         <div>
-            <h1>Mark Williams</h1>
-            <p>Web Developer | Photographer | New York</p>
+            <h1>{{ profile.full_name }}</h1>
+            <p>{{ profile.username }}</p>
             <button type="button" class="btn" data-toggle="modal" data-target="#profileModal">
                 Open Profile
             </button>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">Home</a>
         </div>
     </div>
     <div class="profile-details">
         <h2>About</h2>
-        <p>Web Developer with 5 years of experience in creating stunning websites and applications. Passionate about photography and capturing moments. Living in New York City.</p>
+        <p>
+            {{ profile.bio }}
+        </p>
     </div>
+
+
     <div class="posts">
         <h2>Recent Photos</h2>
         <div class="post-grid">
@@ -65,9 +77,8 @@
         </div>
     </div>
 </div>
-
 <!-- Modal for Profile -->
-<div class="container mt-5"> <!-- Add margin top here -->
+<div class="container mt-5">
     <div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -81,38 +92,49 @@
                     <div class="card profile-card">
                         <div class="row no-gutters">
                             <div class="col-md-4 text-center">
-                                <img src="https://th.bing.com/th/id/OIP.Bdw5SUZPuRZRNXAq7ikLLwHaIp?rs=1&pid=ImgDetMain" class="card-img profile-picture rounded-circle" alt="Profile Picture">
+                                {% if profile.profile_picture %}
+                                    <img src="{{ profile.profile_picture.url }}" class="card-img profile-picture rounded-circle" alt="Profile Picture">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/150" class="card-img profile-picture rounded-circle" alt="Default Profile Picture">
+                                {% endif %}
+
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
-                                  <form method="POST" action="{% url 'profile_update' %}">
+                                    <form method="post" action="{% url 'profile_update' user_id=profile.username.id %}" enctype="multipart/form-data">
                                         {% csrf_token %}
+                                        <i ><input type="file" class="fa-light fa-camera" id="profile_picture" name="profile_picture"></i>
+
+
                                         <div class="form-group">
                                             <label for="username">Username:</label>
-                                            <input type="text" class="form-control" id="username" name="username" value="">
+                                            <input type="text" class="form-control" id="username" name="username" value="{{ profile.username.username }}" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="full_name">Full Name:</label>
+                                            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ profile.full_name }}">
                                         </div>
                                         <div class="form-group">
                                             <label for="bio">Bio:</label>
-                                            <textarea class="form-control" id="bio" name="bio" rows="3"></textarea>
+                                            <textarea class="form-control" id="bio" name="bio" rows="3">{{ profile.bio }}</textarea>
                                         </div>
                                         <div class="form-group">
                                             <label for="gender">Gender:</label>
-                                            <input type="text" class="form-control" id="gender" name="gender" value="">
+                                            <select class="form-control" id="gender" name="gender">
+                                                <option value="NONE" {% if profile.gender == None %}selected{% endif %}>Select</option>
+                                                <option value="M" {% if profile.gender == "M" %}selected{% endif %}>Male</option>
+                                                <option value="F" {% if profile.gender == "F" %}selected{% endif %}>Female</option>
+                                                <option value="O" {% if profile.gender == "O" %}selected{% endif %}>Other</option>
+                                            </select>
                                         </div>
                                         <div class="form-group">
                                             <label for="dob">Date of Birth:</label>
-                                            <input type="date" class="form-control" id="dob" name="date_of_birth" value="">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="email">Email:</label>
-                                            <input type="email" class="form-control" id="email" name="email" value="">
+                                            <input type="date" class="form-control" id="dob" name="date_of_birth" value="{{ profile.date_of_birth|date:'Y-m-d' }}">
                                         </div>
                                         <div class="form-group">
                                             <label for="phone_number">Phone Number:</label>
-                                            <input type="text" class="form-control" id="phone_number" name="phone_number" value="">
+                                            <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ profile.phone_number }}">
                                         </div>
-
                                         <button type="submit" class="btn btn-primary">Update</button>
                                     </form>
                                 </div>

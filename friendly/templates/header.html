@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'Deploy/assets/style.css' %}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Search Feature</title>
+        <meta charset="UTF-8">
+        <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    </head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="header-wrapper">
+                <div class="logoBox">
+                    <a class="navbar-brand" href="#">Friendly</a>
+                </div>
+                <div class="searchBox" data-toggle="modal" data-target="#searchmodal" data-id="search-box">
+                    <input type="search" id="user-search" data-search placeholder="Search...">
+                    <button class="search__clear">&times;</button>
+                    <div class="recent-search">
+                        <button class="clear-btn" disabled>No Recent Items</button>
+                        <div class="recent-search__list"></div>
+                    </div>
+                </div>
+                <div id="list" class="list" data-searchable data-id="results-list"></div>
+            </div>
+            <div class="iconBox2">
+
+                <i class="fa-solid fa-house"></i>
+
+                <i class="fa-solid fa-circle-plus" data-target="#myModal" data-toggle="modal"></i>
+
+                <i class="fa-brands fa-facebook-messenger"></i>
+
+                <i class="fa-solid fa-bell"></i>
+
+                <a href="{% url 'profile'%}">
+                  <label><img src="{% static 'Deploy/assets/images/OIP.jpg' %}" alt="user"></label>
+                </a>
+
+                <a href="{% url 'user_logout' %}" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+
+            </div>
+        </div>
+    </header>
