@@ -1,18 +1,18 @@
-
-from .forms import CreateUserForm, LoginForm
+from .forms import CreateUserForm, LoginForm, ProfileUpdate
 from django.contrib.auth import authenticate, login as auth_login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import GalleryUploadForm, VideoUploadForm, LocationForm, PostForm
 from django.contrib import messages
-from .models import Post
+from .models import Post, UserProfile
 
 
 def register(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            UserProfile.objects.create(username=user)
             return redirect("user_login")
     else:
         form = CreateUserForm()
@@ -21,7 +21,7 @@ def register(request):
     return render(request, 'register.html', context=context)
 
 
-def user_login(request):  # Renamed from 'login' to 'user_login'
+def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
@@ -31,11 +31,9 @@ def user_login(request):  # Renamed from 'login' to 'user_login'
             if user is not None:
                 auth_login(request, user)
                 if user.is_staff:
-                    return redirect("admin:index")  # Redirect to admin dashboard
+                    return redirect("admin:index")
                 else:
                     return redirect('dashboard')
-
-
     else:
         form = LoginForm()
 
@@ -43,18 +41,42 @@ def user_login(request):  # Renamed from 'login' to 'user_login'
     return render(request, 'login.html', context=context)
 
 
-@login_required(login_url='/user_login')  # Adjusted login URL to 'user_login'
+@login_required(login_url='/user_login')
 def user_logout(request):
     logout(request)
     return redirect('user_login')
 
 
-@login_required(login_url='/user_login')  # Adjusted login URL to 'user_login'
+@login_required(login_url='/user_login')
 def dashboard(request):
-    posts = Post.objects.all().order_by('-uploaded_at')
+    user = request.user
+    profile = get_object_or_404(UserProfile, username=user)
 
-    return render(request, 'dashboard.html', {'posts': posts})
+    if not profile.full_name or not profile.email or not profile.phone_number:
+        messages.error(request, 'Please update your profile details.')
+    posts = Post.objects.filter(is_public=True).order_by('-uploaded_at')
 
+    return render(request, 'dashboard.html', {
+        'profile': profile,
+        'messages': messages.get_messages(request),
+        'posts': posts,
+    })
+
+
+@login_required(login_url='/user_login')
+def profile(request):
+    user = request.user
+    profile = get_object_or_404(UserProfile, username=user)
+
+    if not profile.full_name or not profile.email or not profile.phone_number:
+        messages.error(request, 'Please update your profile details.')
+    posts = Post.objects.filter(is_public=True).order_by('-uploaded_at')
+
+    return render(request, 'profile.html', {
+        'profile': profile,
+        'messages': messages.get_messages(request),
+        'posts': posts,
+    })
 
 
 @login_required(login_url='/user_login')
@@ -146,3 +168,19 @@ def create_post(request):
         form = PostForm()
     return render(request, 'create_post.html', {'form': form})
 
+@login_required(login_url='/user_login')
+def profile_update(request):
+    user_profile = request.user
+
+    if request.method == 'POST':
+        form = ProfileUpdate(request.POST, request.FILES, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('profile')  # Redirect to the profile page
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ProfileUpdate(instance=user_profile)
+
+    return render(request, 'profile.html', {'form': form})

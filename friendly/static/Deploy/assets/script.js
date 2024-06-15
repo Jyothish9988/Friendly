@@ -108,5 +108,8 @@
     });
 
 
+        function closeSuccessMessage(element) {
+            element.parentElement.style.display = 'none';
+        }
 
     

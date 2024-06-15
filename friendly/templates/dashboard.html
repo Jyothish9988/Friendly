@@ -33,11 +33,19 @@
                 <div id="list" class="list" data-searchable data-id="results-list"></div>
             </div>
             <div class="iconBox2">
+                
                 <i class="fa-solid fa-house"></i>
+                
                 <i class="fa-solid fa-circle-plus" data-target="#myModal" data-toggle="modal"></i>
+                
                 <i class="fa-brands fa-facebook-messenger"></i>
+                
                 <i class="fa-solid fa-bell"></i>
-                <label><img src="assets/images/OIP.jpg" alt="user"></label>
+                
+                <a href="{% url 'profile' %}">
+                  <label><img src="{% static 'Deploy/assets/images/OIP.jpg' %}" alt="user"></label>
+                </a>   
+                
                 <a href="{% url 'user_logout' %}" class="logout-link">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
@@ -46,13 +54,46 @@
         </div>
     </header>
     <div class="home">
-        {% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-success" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
+    <!-- Error messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <li class="alert alert-danger" role="alert" style="height: 90px">
+                        {{ message }}
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <!-- Consume messages -->
+        {% if message.tags == 'error' %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+<br>
+    <!-- Success messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <li class="alert alert-success" role="alert" style="height: 90px">
+                        {{ message }}
+                        {% if message.tags == 'success' %}
+                            <button type="button" class="close" onclick="closeSuccessMessage(this)">x</button>
+                        {% endif %}
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <!-- Consume messages -->
+        {% if message.tags == 'success' %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
 
         <div class="container">
             <div class="home-weapper"> 

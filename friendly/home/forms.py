@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.forms.widgets import PasswordInput, TextInput
 from django import forms
-from .models import Post
+from .models import Post,UserProfile
 
 class CreateUserForm(UserCreationForm):
     class Meta:
@@ -31,3 +31,9 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['title', 'description', 'is_public', 'video', 'image', 'location']
+
+
+class ProfileUpdate(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture', 'bio', 'gender', 'date_of_birth', 'phone_number']
