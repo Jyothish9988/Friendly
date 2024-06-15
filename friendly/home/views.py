@@ -15,7 +15,7 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            UserProfile.objects.create(username=user)
+            UserProfile.objects.create(username=user, profile_picture='dummy.jpg')
             return redirect("user_login")
     else:
         form = CreateUserForm()
@@ -53,8 +53,19 @@ def user_logout(request):
 @login_required(login_url='/user_login')
 def dashboard(request):
     user = request.user
+    myname = request.user.username
+    friends = FriendRequest.objects.filter(to_user__username=myname, is_accepted=True)
+
     profile = get_object_or_404(UserProfile, username=user)
-    users = UserProfile.objects.exclude(username=user)
+
+    # Fetch user profiles of friends
+    friend_profiles = []
+    for friend_request in friends:
+        try:
+            friend_profile = UserProfile.objects.get(username=friend_request.from_user)
+            friend_profiles.append(friend_profile)
+        except UserProfile.DoesNotExist:
+            pass  # Handle cases where a user profile does not exist for some reason
 
     if not profile.full_name or not profile.phone_number:
         messages.error(request, 'Please update your profile details.')
@@ -63,11 +74,10 @@ def dashboard(request):
 
     return render(request, 'dashboard.html', {
         'profile': profile,
+        'friend_profiles': friend_profiles,
         'messages': messages.get_messages(request),
         'posts': posts,
-
     })
-
 
 class SearchResultsView(ListView):
     model = UserProfile
@@ -266,9 +276,9 @@ def accept_friend_request(request, request_id):
     friend_request = get_object_or_404(FriendRequest, id=request_id, to_user=request.user)
 
     if friend_request.is_accepted:
-        return redirect('friend_requests')
+        return redirect('friend_requests_view')
 
     friend_request.is_accepted = True
     friend_request.save()
 
-    return redirect('friend_requests')
+    return redirect('friend_requests_view')

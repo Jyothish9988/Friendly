@@ -37,6 +37,10 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    def get_uploaded_by_profile_picture(self):
+        # Access UserProfile through User instance
+        return self.uploaded_by.userprofile.profile_picture.url if self.uploaded_by.userprofile.profile_picture else None
+
 
 class UserProfile(models.Model):
     GENDER_CHOICES = [

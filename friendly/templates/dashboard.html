@@ -132,46 +132,45 @@
                                 </a>
     
     
-<!-- Your modal structure with added search form -->
-<div class="modal fade" id="userSearchModal">
-    <div class="">
-        <div class="">
-            <div class="modal-body">
-                <div class="row">
-                    <!-- Search box inside modal -->
-                    <div class="searchBox">
-                        <form id="user-search-form" method="GET">
-                            <label for="user-search">Search for user</label>
-                            <input type="search" id="user-search" name="q" placeholder="Search...">
-                            <button type="submit">Search</button> <!-- Add submit button -->
-                            <button class="search__clear">&times;</button>
-                            <div class="recent-search">
-                                <button class="clear-btn" disabled>No Recent Items</button>
-                                <div class="recent-search__list"></div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- End of Search box -->
+                                    <div class="modal fade" id="userSearchModal">
+                                        <div class="">
+                                            <div class="">
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <!-- Search box inside modal -->
+                                                        <div class="searchBox">
+                                                            <form id="user-search-form" method="GET">
+                                                                <label for="user-search">Search for user</label>
+                                                                <input type="search" id="user-search" name="q" placeholder="Search...">
+                                                                <button type="submit">Search</button> <!-- Add submit button -->
+                                                                <button class="search__clear">&times;</button>
+                                                                <div class="recent-search">
+                                                                    <button class="clear-btn" disabled>No Recent Items</button>
+                                                                    <div class="recent-search__list"></div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <!-- End of Search box -->
 
-                    <!-- Display searched users -->
-                    <div id="search-results" class="list" data-searchable>
-                        {% if searched_users %}
-                            <h2>Searched Users:</h2>
-                            <ul>
-                                {% for user in searched_users %}
-                                    <li>{{ user.username }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p>No users found.</p>
-                        {% endif %}
-                    </div>
-                    <!-- End of Display searched users -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                                                        <!-- Display searched users -->
+                                                        <div id="search-results" class="list" data-searchable>
+                                                            {% if searched_users %}
+                                                                <h2>Searched Users:</h2>
+                                                                <ul>
+                                                                    {% for user in searched_users %}
+                                                                        <li>{{ user.username }}</li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            {% else %}
+                                                                <p>No users found.</p>
+                                                            {% endif %}
+                                                        </div>
+                                                        <!-- End of Display searched users -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
 
                                 <!-- Post -->
@@ -268,25 +267,27 @@
                                     </div>
                                 </div>
 
-                                <!-- Location -->
-
-                                <div class="modal fade" id="locationModal">
-                                    <div class="modal-dialog">
+                                <!-- Location Modal -->
+                                <div class="modal fade" id="locationModal" tabindex="-1" role="dialog" aria-labelledby="locationModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h4 class="modal-title">Add Location</h4>
-                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h5 class="modal-title" id="locationModalLabel">Add Location</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
                                             </div>
                                             <div class="modal-body">
+                                                <!-- Form to add location -->
                                                 <form method="POST" action="{% url 'add_location' %}">
                                                     {% csrf_token %}
                                                     <div class="form-group">
                                                         <label for="locationName">Location Name:</label>
-                                                        <input type="text" class="form-control" id="locationName" name="location_name">
+                                                        <input type="text" class="form-control" id="locationName" name="location_name" placeholder="Enter location name">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="gpsCoordinates">GPS Coordinates:</label>
-                                                        <input type="text" class="form-control" id="gpsCoordinates" name="gps_coordinates" readonly>
+                                                        <input type="text" class="form-control" id="gpsCoordinates" name="gps_coordinates" placeholder="Enter GPS coordinates">
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Add Location</button>
                                                 </form>
@@ -459,28 +460,18 @@
                             <div class="messenger-search">
                                 <i class="fa-solid fa-user-group"></i>
                                 <h4>Messenger</h4>
-                                <input type="search" placeholder="Search">
-                                <i class="fa-solid fa-magnifying-glass"></i>
+
                             </div>
                             <ul>
+                                {% for friend in friend_profiles %}
                                 <li>
-                                    <img src="images/us2.png" alt="user">
-                                    <b>Zunayed Hossain <span>Online</span></b>
+                                    <img src="{{ friend.profile_picture.url }}" alt="user">
+                                    <b>{{ friend.full_name }}<span>Online</span></b>
                                     <i class="fa-brands fa-facebook-messenger"></i>
                                 </li>
+                                {% endfor %}
 
-                                <li>
-                                    <img src="images/us3.png" alt="user">
-                                    <b>Armanul Islam <span>Offline</span></b>
-                                    <i class="fa-brands fa-facebook-messenger"></i>
-                                </li>
 
-                                <li>
-                                    <img src="images/us4.png" alt="user">
-                                    <b>Mohammad Amir <span>Online</span></b>
-                                    <i class="fa-brands fa-facebook-messenger"></i>
-                                </li>
-                                <br>
 
                                 <button class="see-more-btn">See more <i class="fa-solid fa-angle-down"></i></button>
                             </ul>
@@ -500,7 +491,9 @@
 
 
 
+
     <script src="{% static 'Deploy/assets/script.js' %}"></script>
+     <script src="{% static 'Deploy/assets/location.js' %}"></script>
     
     <script src="{% static 'Deploy/assets/script2.js' %}"></script>
 
