@@ -22,27 +22,31 @@
                 <div class="logoBox">
                     <a class="navbar-brand" href="#">Friendly</a>
                 </div>
+
+
                 <div class="searchBox" data-toggle="modal" data-target="#searchmodal" data-id="search-box">
-                    <input type="search" id="user-search" data-search placeholder="Search...">
-                    <button class="search__clear">&times;</button>
-                    <div class="recent-search">
-                        <button class="clear-btn" disabled>No Recent Items</button>
-                        <div class="recent-search__list"></div>
-                    </div>
+                    <form action="{% url 'search_results' %}" method="get">
+                         <input name="q" type="text" placeholder="Search..." style="width: 300px;">
+                    </form>
+
                 </div>
-                <div id="list" class="list" data-searchable data-id="results-list"></div>
+
+
+
             </div>
             <div class="iconBox2">
-                
-                <i class="fa-solid fa-house"></i>
-                
+
+                 <a href="{% url 'dashboard' %}" class="logout-link">
+                   <i class="fa-solid fa-house"></i>
+                </a>
+
                 <i class="fa-solid fa-circle-plus" data-target="#myModal" data-toggle="modal"></i>
                 
                 <i class="fa-brands fa-facebook-messenger"></i>
                 
                 <i class="fa-solid fa-bell"></i>
                 
-                <a href="{% url 'profile'%}">
+                <a href="{% url 'profile' %}">
                   <label><img src="{{ profile.profile_picture.url }}" alt="user"></label>
                 </a>   
                 
@@ -126,34 +130,48 @@
                                 </a>
     
     
-                                  
-    
-                                <div class="modal fade">
-                                    <div class="">
-                                        <div class="">
-                                            <!-- <div class="modal-header">
-                                                <h4 class="modal-title">Upload Gallery</h4>
-                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            </div> -->
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="searchBox">
-                                                      <label for="user-search">Search for user</label>
-                                                      <input type="search" id="user-search" data-search placeholder="Search...">
-                                                      <button class="search__clear">&times;</button>
-                                                      <div class="recent-search">
-                                                        <button class="clear-btn" disabled>No Recent Items</button>
-                                                        <div class="recent-search__list"></div>
-                                                      </div>
-                                                    </div>
-                                                    <div id="list" class="list" data-searchable></div>
-                                                  </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                            
+<!-- Your modal structure with added search form -->
+<div class="modal fade" id="userSearchModal">
+    <div class="">
+        <div class="">
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Search box inside modal -->
+                    <div class="searchBox">
+                        <form id="user-search-form" method="GET">
+                            <label for="user-search">Search for user</label>
+                            <input type="search" id="user-search" name="q" placeholder="Search...">
+                            <button type="submit">Search</button> <!-- Add submit button -->
+                            <button class="search__clear">&times;</button>
+                            <div class="recent-search">
+                                <button class="clear-btn" disabled>No Recent Items</button>
+                                <div class="recent-search__list"></div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- End of Search box -->
+
+                    <!-- Display searched users -->
+                    <div id="search-results" class="list" data-searchable>
+                        {% if searched_users %}
+                            <h2>Searched Users:</h2>
+                            <ul>
+                                {% for user in searched_users %}
+                                    <li>{{ user.username }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No users found.</p>
+                        {% endif %}
+                    </div>
+                    <!-- End of Display searched users -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
                                 <!-- Post -->
 
                                 <div class="modal fade" id="myModal">
@@ -476,7 +494,7 @@
             </div>
         </div>
     </div>
-    
+
 
 
 

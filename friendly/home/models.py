@@ -18,6 +18,10 @@ class Post(models.Model):
         ('gallery', 'Gallery'),
         ('video', 'Video'),
     )
+    FOR_KIDS = (
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    )
 
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
@@ -28,6 +32,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to='images/', null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     file_type = models.CharField(max_length=20, choices=FILE_TYPE_CHOICES, default='')
+    lim = models.CharField(max_length=20, choices=FOR_KIDS, default='')
 
     def __str__(self):
         return self.title
@@ -46,7 +51,6 @@ class UserProfile(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
-    email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 

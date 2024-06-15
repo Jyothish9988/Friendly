@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from .views import SearchResultsView
 
 urlpatterns = [
     path('', views.user_login, name='user_login'),
@@ -16,4 +16,7 @@ urlpatterns = [
 
     path('profile', views.profile, name='profile'),
     path('profile_update/<int:user_id>/', views.profile_update, name='profile_update'),
+
+    path("search/", SearchResultsView.as_view(), name="search_results"),
+
 ]

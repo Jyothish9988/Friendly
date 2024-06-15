@@ -22,28 +22,22 @@
                 <div class="logoBox">
                     <a class="navbar-brand" href="#">Friendly</a>
                 </div>
+
+
                 <div class="searchBox" data-toggle="modal" data-target="#searchmodal" data-id="search-box">
-                    <input type="search" id="user-search" data-search placeholder="Search...">
-                    <button class="search__clear">&times;</button>
-                    <div class="recent-search">
-                        <button class="clear-btn" disabled>No Recent Items</button>
-                        <div class="recent-search__list"></div>
-                    </div>
+                    <form action="{% url 'search_results' %}" method="get">
+                         <input name="q" type="text" placeholder="Search..." style="width: 400px;">
+                    </form>
+
                 </div>
-                <div id="list" class="list" data-searchable data-id="results-list"></div>
+
+
+
             </div>
             <div class="iconBox2">
-
-                <i class="fa-solid fa-house"></i>
-
-                <i class="fa-solid fa-circle-plus" data-target="#myModal" data-toggle="modal"></i>
-
-                <i class="fa-brands fa-facebook-messenger"></i>
-
-                <i class="fa-solid fa-bell"></i>
-
-                <a href="{% url 'profile'%}">
-                  <label><img src="{% static 'Deploy/assets/images/OIP.jpg' %}" alt="user"></label>
+                <i class=""></i>
+                <a href="{% url 'dashboard' %}" class="logout-link">
+                    <i class="fa-solid fa-house"></i>
                 </a>
 
                 <a href="{% url 'user_logout' %}" class="logout-link">

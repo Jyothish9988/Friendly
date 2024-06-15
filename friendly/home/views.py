@@ -1,4 +1,5 @@
-from .forms import CreateUserForm, LoginForm, ProfileUpdate
+from django.views.generic import TemplateView, ListView
+from .forms import CreateUserForm, LoginForm
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -6,6 +7,7 @@ from django.contrib.auth.models import User
 from .forms import GalleryUploadForm, VideoUploadForm, LocationForm, PostForm
 from django.contrib import messages
 from .models import Post, UserProfile
+from django.db.models import Q
 
 
 def register(request):
@@ -50,27 +52,40 @@ def user_logout(request):
 
 @login_required(login_url='/user_login')
 def dashboard(request):
-    user_profile = request.user
     user = request.user
     profile = get_object_or_404(UserProfile, username=user)
+    users = UserProfile.objects.exclude(username=user)
 
-
-    if not profile.full_name or not profile.email or not profile.phone_number:
+    if not profile.full_name or not profile.phone_number:
         messages.error(request, 'Please update your profile details.')
+
     posts = Post.objects.filter(is_public=True).order_by('-uploaded_at')
 
     return render(request, 'dashboard.html', {
         'profile': profile,
         'messages': messages.get_messages(request),
         'posts': posts,
+
     })
+
+
+class SearchResultsView(ListView):
+    model = UserProfile
+    template_name = "search_result.html"
+
+    def get_queryset(self):  # new
+        query = self.request.GET.get("q")
+        object_list = UserProfile.objects.filter(
+            Q(name__icontains=query) | Q(state__icontains=query)
+        )
+        return object_list
 
 
 @login_required(login_url='/user_login')
 def profile(request):
     user = request.user
     user_profile = request.user
-    profile = get_object_or_404(UserProfile, username=user)
+    profile = get_object_or_404(UserProfile, username=user.id)
     details = UserProfile.objects.filter(username=user)
 
     if not profile.full_name or not profile.email or not profile.phone_number:
@@ -174,6 +189,7 @@ def create_post(request):
     else:
         form = PostForm()
     return render(request, 'create_post.html', {'form': form})
+
 
 @login_required
 def profile_update(request, user_id):
