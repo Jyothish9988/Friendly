@@ -9,6 +9,8 @@ import threading
 import logging
 from background_task import background
 
+from home.models import Post
+
 logger = logging.getLogger(__name__)
 
 
@@ -83,10 +85,10 @@ def run_classification_in_thread(post_id):
     thread.start()
 
 
-def video_classify_nudity(post_id):
-    try:
-        from .models import Post  # Import inside the function to avoid circular import
 
+def video_classify_nudity(post_id):
+    frames_dir = 'video_frames'  # Define frames_dir outside the try block
+    try:
         with transaction.atomic():
             post = Post.objects.select_for_update().get(id=post_id)  # Lock the post row for update
 
@@ -101,7 +103,6 @@ def video_classify_nudity(post_id):
                 logger.info(f"Processing video for Post {post_id} at path: {video_path}")
 
                 # Create a directory to save frames
-                frames_dir = 'video_frames'
                 os.makedirs(frames_dir, exist_ok=True)
 
                 # Open the video file
@@ -180,3 +181,16 @@ def video_classify_nudity(post_id):
     except Exception as e:
         print(f"Error in video_classify_nudity task: {e}")
         logger.error(f"Error in video_classify_nudity task: {e}")
+    finally:
+        # Clean up: Remove the frame files
+        if os.path.exists(frames_dir):
+            for filename in os.listdir(frames_dir):
+                file_path = os.path.join(frames_dir, filename)
+                try:
+                    os.remove(file_path)
+                except Exception as cleanup_error:
+                    print(f"Error while cleaning up frame files: {cleanup_error}")
+                    logger.error(f"Error while cleaning up frame files: {cleanup_error}")
+            print("Frame files cleaned up.")
+
+
