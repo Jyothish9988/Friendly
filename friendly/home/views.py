@@ -6,8 +6,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import GalleryUploadForm, VideoUploadForm, LocationForm, PostForm
 from django.contrib import messages
-from .models import Post, UserProfile,FriendRequest
+from .models import Post, UserProfile, FriendRequest
 from django.db.models import Q
+from .tasks import classify_nudity, video_classify_nudity
+from django.http import HttpResponseServerError
+from .tasks import classify_nudity  # Import your background task
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def register(request):
@@ -53,24 +59,23 @@ def user_logout(request):
 @login_required(login_url='/user_login')
 def dashboard(request):
     user = request.user
-    myname = request.user.username
+    myname = user.username
     friends = FriendRequest.objects.filter(to_user__username=myname, is_accepted=True)
 
     profile = get_object_or_404(UserProfile, username=user)
 
     # Fetch user profiles of friends
-    friend_profiles = []
-    for friend_request in friends:
-        try:
-            friend_profile = UserProfile.objects.get(username=friend_request.from_user)
-            friend_profiles.append(friend_profile)
-        except UserProfile.DoesNotExist:
-            pass  # Handle cases where a user profile does not exist for some reason
+    friend_profiles = [UserProfile.objects.get(username=friend_request.from_user)
+                       for friend_request in friends]
 
     if not profile.full_name or not profile.phone_number:
         messages.error(request, 'Please update your profile details.')
 
-    posts = Post.objects.filter(is_public=True).order_by('-uploaded_at')
+    # Filter posts: show posts from friends or public posts
+    friend_usernames = [friend_request.from_user.username for friend_request in friends]
+    posts = Post.objects.filter(
+        Q(is_public=True) | Q(uploaded_by__username__in=friend_usernames)
+    ).order_by('-uploaded_at')
 
     return render(request, 'dashboard.html', {
         'profile': profile,
@@ -78,6 +83,7 @@ def dashboard(request):
         'messages': messages.get_messages(request),
         'posts': posts,
     })
+
 
 class SearchResultsView(ListView):
     model = UserProfile
@@ -114,27 +120,39 @@ def profile(request):
 
 @login_required(login_url='/user_login')
 def upload_gallery(request):
-    if request.method == 'POST':
-        form = GalleryUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Extract form data
-            gallery_title = form.cleaned_data['gallery_title']
-            gallery_description = form.cleaned_data['gallery_description']
-            gallery_file = form.cleaned_data['gallery_file']
+    try:
+        if request.method == 'POST':
+            form = GalleryUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                # Extract form data
+                gallery_title = form.cleaned_data['gallery_title']
+                gallery_description = form.cleaned_data['gallery_description']
+                gallery_file = form.cleaned_data['gallery_file']
 
-            # Create Post object
-            post = Post.objects.create(
-                uploaded_by=request.user,
-                title=gallery_title,
-                description=gallery_description,
-                image=gallery_file,
-                file_type='gallery'
-            )
-            messages.success(request, 'Gallery uploaded successfully.')
-            return redirect('dashboard')
-    else:
-        form = GalleryUploadForm()
-    return render(request, 'upload_gallery.html', {'form': form})
+                # Get the current logged-in user's profile
+                user_profile = UserProfile.objects.get(username=request.user)
+
+                # Create Post object
+                post = Post.objects.create(
+                    uploaded_by=request.user,
+                    title=gallery_title,
+                    description=gallery_description,
+                    image=gallery_file,
+                    file_type='gallery',
+                    profile_picture=user_profile.profile_picture
+                )
+                messages.success(request, 'Gallery uploaded successfully.')
+
+                # Call the classify_nudity function asynchronously
+                classify_nudity(post.id)  # Assuming 'post.id' is the ID of the created post
+
+                return redirect('dashboard')
+        else:
+            form = GalleryUploadForm()
+        return render(request, 'upload_gallery.html', {'form': form})
+    except Exception as e:
+        logger.error(f"Error in upload_gallery view: {e}")
+        return HttpResponseServerError("An error occurred while processing your request.")
 
 
 @login_required(login_url='/user_login')
@@ -146,16 +164,19 @@ def upload_video(request):
             video_title = form.cleaned_data['video_title']
             video_description = form.cleaned_data['video_description']
             video_file = form.cleaned_data['video_file']
-
+            user_profile = UserProfile.objects.get(username=request.user)
             # Create Post object
             post = Post.objects.create(
                 uploaded_by=request.user,
                 title=video_title,
                 description=video_description,
                 video=video_file,
-                file_type='video'
+                file_type='video',
+                profile_picture = user_profile.profile_picture
+
             )
             messages.success(request, 'Video uploaded successfully.')
+            video_classify_nudity(post.id)
             return redirect('dashboard')
     else:
         form = VideoUploadForm()
@@ -170,13 +191,14 @@ def add_location(request):
             # Extract form data
             location_name = form.cleaned_data['location_name']
             gps_coordinates = form.cleaned_data['gps_coordinates']
-
+            user_profile = UserProfile.objects.get(username=request.user)
             # Create Post object
             post = Post.objects.create(
                 uploaded_by=request.user,
                 title=location_name,
                 location=gps_coordinates,
-                file_type='location'
+                file_type='location',
+                profile_picture=user_profile.profile_picture
             )
             messages.success(request, 'Location added successfully.')
             return redirect('dashboard')
@@ -194,11 +216,19 @@ def create_post(request):
             post = form.save(commit=False)
             post.uploaded_by = request.user
             post.file_type = 'post'
+
+            try:
+                user_profile = UserProfile.objects.get(username=request.user)
+                post.profile_picture = user_profile.profile_picture
+            except UserProfile.DoesNotExist:
+                post.profile_picture = None
+
             post.save()
             messages.success(request, 'Post created successfully.')
             return redirect('dashboard')
     else:
         form = PostForm()
+
     return render(request, 'create_post.html', {'form': form})
 
 

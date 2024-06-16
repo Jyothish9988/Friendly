@@ -19,12 +19,15 @@ class Post(models.Model):
         ('video', 'Video'),
     )
     FOR_KIDS = (
+        ('new', 'new'),
         ('yes', 'Yes'),
         ('no', 'No'),
+
     )
 
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
+    profile_picture = models.CharField(max_length=255, null=True, blank=True)
+    title = models.CharField(max_length=200,null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -32,13 +35,13 @@ class Post(models.Model):
     image = models.ImageField(upload_to='images/', null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     file_type = models.CharField(max_length=20, choices=FILE_TYPE_CHOICES, default='')
-    lim = models.CharField(max_length=20, choices=FOR_KIDS, default='')
+    lim = models.CharField(max_length=20, choices=FOR_KIDS, default='new')
+    report = models.CharField(max_length=200,null=True, blank=True)
 
     def __str__(self):
         return self.title
 
     def get_uploaded_by_profile_picture(self):
-        # Access UserProfile through User instance
         return self.uploaded_by.userprofile.profile_picture.url if self.uploaded_by.userprofile.profile_picture else None
 
 

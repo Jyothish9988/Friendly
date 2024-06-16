@@ -309,7 +309,7 @@
                         {% for post in posts %}
                                 <div class="post-container" id="post1">
                                     <div class="post-title">
-                                        <img src="{{ profile.profile_picture.url }}" alt="user picture">
+                                        <img src="/{{ post.profile_picture }}" alt="user picture">
                                         <ul>
                                             <li><h3>{{ post.uploaded_by }}
                                                 {% comment %} <span> . 2 hours ago</span></h3> {% endcomment %}
@@ -322,14 +322,28 @@
                                     </div>
 
                                     {% if post.file_type == 'gallery' %}
+                                        {% if post.lim == 'no' %}
                                         <div class="post-images">
                                             <img src="{{ post.image.url }}" alt="{{ post.title }}" style="height:400px;" class="double-tap-to-like">
                                         </div>
+                                        {% elif post.lim == 'yes' %}
+                                        <div class="post-images">
+
+                                            <img src="https://png.pngtree.com/png-vector/20220608/ourmid/pngtree-sensitive-content-crossed-eye-on-blur-background-png-image_4900076.png" alt="Explicit Content"  style="height:100%; width:100%" class="double-tap-to-like">
+
+                                        </div>
+                                         {% endif %}
                                     {% elif post.file_type == 'video' %}
+                                         {% if post.lim == 'no' %}
                                         <video src="{{ post.video.url }}" controls style="height:400px;" class="double-tap-to-like"></video>
+                                          {% elif post.lim == 'yes' %}
+                                        <div class="post-images">
+                                            <img src="https://png.pngtree.com/png-vector/20220608/ourmid/pngtree-sensitive-content-crossed-eye-on-blur-background-png-image_4900076.png" alt="Explicit Content"  style="height:100%; width:100%" class="double-tap-to-like">
+                                        </div>
+                                         {% endif %}    
                                     {% endif %}
 
-                                
+
                                     <div class="post-interactions">
                                         <ul>
                                             <li>
@@ -377,76 +391,6 @@
                                 </div>
                             {% endfor %}
 
-
-
-                        
-                        <div class="post-container" id="post2">
-                            <div class="post-title">
-                                <img src="images/user2.jpg" alt="user picture">
-                                <ul>
-                                    <li><h3>Arham Kabir <span> . 3 hours ago</span></h3></li>
-                                    <li><span>02 March at 1:55 PM</span></li>
-                                </ul>
-                                <p>Here is an explicit content image with blur effect that you can toggle.</p>
-                            </div>
-                            <div class="image-container explicit-content">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvsxiFMek_QzilZ9X_ELH5ZQCcWOvcYYvMVA&s" alt="Explicit Content" id="explicitImage" style="height:400px;" class="double-tap-to-like">
-                                <div class="eye-mask" id="toggleBlurBtn">👁️‍🗨️</div>
-                            </div>
-                            <div class="post-interactions">
-                                <ul>
-                                    <li>
-                                        <button class="like-btn" id="likeBtn2">
-                                            <span class="heart" id="heartIcon2"><i class="fa fa-heart"></i></span> <span id="likeCount2">0</span> Likes
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="view-comments-btn" id="viewCommentsBtn2">View Comments</button>
-                                    </li>
-                                </ul>
-                                <div id="viewsCount">2000 views</div>
-                            </div>
-                            <div class="comment-field">
-                                <input type="text" placeholder="Write a comment...">
-                                <button><i class="fa fa-paper-plane"></i></button>
-                            </div>
-                            <div class="comments-section" id="commentsSection2">
-                                <div class="comment">
-                                    <img src="images/user3.jpg" alt="commenter profile image">
-                                    <p>Comment 1: Nice content!</p>
-                                    <div class="comment-interactions">
-                                        <span class="comment-like-btn">Like</span>
-                                        <span class="comment-reply-btn">Reply</span>
-                                    </div>
-                                </div>
-                                <div class="comment comment-reply">
-                                    <img src="images/user2.jpg" alt="replier profile image">
-                                    <p>Reply 1: Appreciate it!</p>
-                                    <div class="comment-interactions">
-                                        <span class="comment-like-btn">Like</span>
-                                        <span class="comment-reply-btn">Reply</span>
-                                    </div>
-                                </div>
-                                <div class="comment">
-                                    <img src="images/user4.jpg" alt="commenter profile image">
-                                    <p>Comment 2: Very informative.</p>
-                                    <div class="comment-interactions">
-                                        <span class="comment-like-btn">Like</span>
-                                        <span class="comment-reply-btn">Reply</span>
-                                    </div>
-                                </div>
-                                <!-- Add more comments here -->
-                            </div>
-                        </div>
-
-
-
-
-
-
-
-
-
     
                     </div> 
                    
@@ -493,8 +437,8 @@
 
 
     <script src="{% static 'Deploy/assets/script.js' %}"></script>
-     <script src="{% static 'Deploy/assets/location.js' %}"></script>
-    
+   
+
     <script src="{% static 'Deploy/assets/script2.js' %}"></script>
 
 </body>
