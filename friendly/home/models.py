@@ -27,7 +27,7 @@ class Post(models.Model):
 
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     profile_picture = models.CharField(max_length=255, null=True, blank=True)
-    title = models.CharField(max_length=200,null=True, blank=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -36,7 +36,7 @@ class Post(models.Model):
     location = models.CharField(max_length=255, null=True, blank=True)
     file_type = models.CharField(max_length=20, choices=FILE_TYPE_CHOICES, default='')
     lim = models.CharField(max_length=20, choices=FOR_KIDS, default='new')
-    report = models.CharField(max_length=200,null=True, blank=True)
+    report = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -73,3 +73,17 @@ class FriendRequest(models.Model):
 
     def __str__(self):
         return f"From: {self.from_user.username}, To: {self.to_user.username}, Accepted: {self.is_accepted}"
+
+
+class Chat(models.Model):
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    content = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='chat/images/', blank=True, null=True)
+    receiver_image = models.ImageField(upload_to='chat/images/', blank=True, null=True)
+    file = models.FileField(upload_to='chat/files/', blank=True, null=True)
+    video = models.FileField(upload_to='chat/videos/', blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender} to {self.receiver} at {self.timestamp}"
