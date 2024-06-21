@@ -1,0 +1,167 @@
+{% include 'header.html' %}
+<body>
+
+{% if age and age > 18 %}
+
+    <div class="post-container" id="post{{ post.id }}">
+        <div class="post-title">
+            <img src="/{{ post.profile_picture }}" alt="user picture">
+            <ul>
+                <li><h3>{{ post.uploaded_by }}</h3></li>
+                <li><span>{{ post.uploaded_at }}</span></li>
+            </ul>
+            <p>{{ post.title }} {{ post.description }}</p>
+        </div>
+
+        {% if post.file_type == 'gallery' %}
+            {% if post.lim == 'yes' %}
+            <div class="post-images">
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="height:400px;" class="double-tap-to-like">
+            </div>
+            {% elif post.lim == 'no' %}
+            <div class="post-images">
+                <img src="https://png.pngtree.com/png-vector/20220608/ourmid/pngtree-sensitive-content-crossed-eye-on-blur-background-png-image_4900076.png" alt="Explicit Content" style="height:100%; width:100%" class="double-tap-to-like">
+            </div>
+            {% endif %}
+        {% elif post.file_type == 'video' %}
+            {% if post.lim == 'yes' %}
+            <video src="{{ post.video.url }}" controls style="height:400px;" class="double-tap-to-like"></video>
+            {% elif post.lim == 'no' %}
+            <div class="post-images">
+               <a href="{% url 'video' id=post.id %}" >Explicit Content</a>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="post-interactions">
+            <ul>
+                <li>
+                    <button class="like-btn" data-post-id="{{ post.id }}" id="likeBtn{{ post.id }}">
+                        <span class="heart" id="heartIcon{{ post.id }}"><i class="fa fa-heart" id="likeIcon{{ post.id }}"></i></span>
+                        <span class="like-count" id="likeCount{{ post.id }}">{{ post.likes.count }}</span> Likes
+                    </button>
+                </li>
+                <li>
+                    <button class="view-comments-btn" data-post-id="{{ post.id }}">View Comments</button>
+                </li>
+            </ul>
+            <div class="views-count">1000 views</div>
+        </div>
+        <div class="comment-field">
+            <input type="text" placeholder="Write a comment..." id="commentInput{{ post.id }}">
+            <button class="add-comment-btn" data-post-id="{{ post.id }}"><i class="fa fa-paper-plane"></i></button>
+        </div>
+        <div class="comments-section" id="commentsSection{{ post.id }}" style="display: none;">
+            {% for comment in post.comments.all %}
+            <div class="comment">
+                <img src="{{ comment.user.profile_picture }}" alt="commenter profile image">
+                <p>{{ comment.content }}</p>
+                <div class="comment-interactions">
+                    <span class="comment-like-btn">Like</span>
+                    <span class="comment-reply-btn">Reply</span>
+                </div>
+            </div>
+            <!-- Replies -->
+            {% for reply in comment.replies.all %}
+            <div class="comment comment-reply">
+                <img src="{{ reply.user.profile_picture }}" alt="replier profile image">
+                <p>{{ reply.content }}</p>
+                <div class="comment-interactions">
+                    <span class="comment-like-btn">Like</span>
+                    <span class="comment-reply-btn">Reply</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+{% else %}    
+<p>Not allowed to view</p>
+{% endif %}
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Function to get the CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie('csrftoken');
+
+            // Like a post
+            $('.like-btn').click(function(){
+                const postId = $(this).data('post-id');
+                const likeIcon = $(`#heartIcon${postId} i`);
+                $.ajax({
+                    url: `/like/${postId}/`,
+                    type: 'GET',
+                    success: function(data){
+                        $(`#likeCount${postId}`).text(data.like_count);
+                        // Toggle the color of the heart icon
+                        if (likeIcon.css('color') === 'rgb(255, 0, 0)') { // red
+                            likeIcon.css('color', 'white');
+                        } else {
+                            likeIcon.css('color', 'red');
+                        }
+                    }
+                });
+            });
+
+            // View comments
+            $('.view-comments-btn').click(function(){
+                const postId = $(this).data('post-id');
+                const commentsSection = $(`#commentsSection${postId}`);
+                // Toggle comments section visibility
+                commentsSection.toggle();
+                // Load comments if not already loaded
+                if (commentsSection.is(':visible') && commentsSection.children().length === 0) {
+                    $.ajax({
+                        url: `/get_comments/${postId}/`,
+                        type: 'GET',
+                        success: function(data){
+                            commentsSection.html(data.comments_html);
+                        }
+                    });
+                }
+            });
+
+            // Add comment
+            $('.add-comment-btn').click(function(){
+                const postId = $(this).data('post-id');
+                const commentInput = $(`#commentInput${postId}`);
+                const commentText = commentInput.val().trim();
+                if (commentText !== '') {
+                    $.ajax({
+                        url: `/add_comment/${postId}/`,
+                        type: 'POST',
+                        data: {
+                            'content': commentText,
+                            'csrfmiddlewaretoken': csrftoken
+                        },
+                        success: function(data){
+                            if (data.success) {
+                                // Clear input and append new comment
+                                commentInput.val('');
+                                $(`#commentsSection${postId}`).append(data.comment_html);
+                            } else {
+                                alert('Error: Unable to add comment.');
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

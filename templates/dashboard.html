@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'Deploy/assets/style.css' %}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Search Feature</title>
+        <meta charset="UTF-8">
+        <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    </head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="header-wrapper">
+                <div class="logoBox">
+                    <a class="navbar-brand" href="#">Friendly</a>
+                </div>
+
+
+                <div class="searchBox" data-toggle="modal" data-target="#searchmodal" data-id="search-box">
+                    <form action="{% url 'search_results' %}" method="get">
+                         <input name="q" type="text" placeholder="Search..." style="width: 300px;">
+                    </form>
+
+                </div>
+
+
+
+            </div>
+            <div class="iconBox2">
+
+                 <a href="{% url 'dashboard' %}" class="logout-link">
+                   <i class="fa-solid fa-house"></i>
+                </a>
+
+                <i class="fa-solid fa-circle-plus" data-target="#myModal" data-toggle="modal"></i>
+                
+                <i class="fa-brands fa-facebook-messenger"></i>
+                                 <a href="{% url 'friend_requests_view' %}" class="logout-link">
+                   <i class="fa-solid fa-bell"></i>
+                </a>
+
+
+                <a href="{% url 'profile' %}">
+                  <label><img src="{{ profile.profile_picture.url }}" alt="user"></label>
+                </a>
+                
+                <a href="{% url 'user_logout' %}" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+
+            </div>
+        </div>
+    </header>
+    <div class="home">
+    <!-- Error messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <li class="alert alert-danger" role="alert" style="height: 90px">
+                        {{ message }}
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <!-- Consume messages -->
+        {% if message.tags == 'error' %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+<br>
+    <!-- Success messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <li class="alert alert-success" role="alert" style="height: 90px">
+                        {{ message }}
+                        {% if message.tags == 'success' %}
+                            <button type="button" class="close" onclick="closeSuccessMessage(this)">x</button>
+                        {% endif %}
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <!-- Consume messages -->
+        {% if message.tags == 'success' %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
+        <div class="container">
+            <div class="home-weapper"> 
+                <!-- home center start here -->
+                <div class="home-center">
+                    <div class="home-center-wrapper">
+                        <div class="createPost">
+    
+                            
+                            <div class="post-icon">
+    
+                                <a href="#" class="custom-btn" style="background: #ffebed;" data-toggle="modal" data-target="#myModal">
+                                    <i style="background: #0053ff;" class="fa fa-plus-square"></i>
+                                    Add Post
+                                </a>
+    
+                                <a href="#" class="custom-btn" style="background: #ffebed;" data-toggle="modal" data-target="#galleryModal">
+                                    <i style="background: #ff4154;" class="fas fa-camera"></i>
+                                    Gallery
+                                </a>
+                            
+                                <a href="#" class="custom-btn" style="background: #ffebed;" data-toggle="modal" data-target="#videoModal">
+                                    <i style="background: #0053ff;" class="fas fa-video"></i>
+                                    Video
+                                </a>
+                            
+                                <a href="#" class="custom-btn" style="background: #ffebed;" data-toggle="modal" data-target="#locationModal">
+                                    <i style="background: #00d181;" class="fas fa-location-dot"></i>
+                                    Location
+                                </a>
+    
+    
+                                    <div class="modal fade" id="userSearchModal">
+                                        <div class="">
+                                            <div class="">
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <!-- Search box inside modal -->
+                                                        <div class="searchBox">
+                                                            <form id="user-search-form" method="GET">
+                                                                <label for="user-search">Search for user</label>
+                                                                <input type="search" id="user-search" name="q" placeholder="Search...">
+                                                                <button type="submit">Search</button> <!-- Add submit button -->
+                                                                <button class="search__clear">&times;</button>
+                                                                <div class="recent-search">
+                                                                    <button class="clear-btn" disabled>No Recent Items</button>
+                                                                    <div class="recent-search__list"></div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <!-- End of Search box -->
+
+                                                        <!-- Display searched users -->
+                                                        <div id="search-results" class="list" data-searchable>
+                                                            {% if searched_users %}
+                                                                <h2>Searched Users:</h2>
+                                                                <ul>
+                                                                    {% for user in searched_users %}
+                                                                        <li>{{ user.username }}</li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            {% else %}
+                                                                <p>No users found.</p>
+                                                            {% endif %}
+                                                        </div>
+                                                        <!-- End of Display searched users -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                <!-- Post -->
+
+                                <div class="modal fade" id="myModal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Post</h4>
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="POST" action="{% url 'create_post' %}">
+                                                    {% csrf_token %}
+                                                    <div class="form-group">
+                                                        <label for="description">Title</label>
+                                                        <input type="text"  class="form-control" id="title" name="title">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="description">Description:</label>
+                                                        <textarea class="form-control" id="description" name="description" rows="4" style="height: 134px;"></textarea>
+                                                    </div>
+                                                    <div class="checkbox-wrapper-10">
+                                                        <input class="tgl tgl-flip" id="cb5" type="checkbox" name="is_public" checked />
+                                                        <label class="tgl-btn" data-tg-off="Private" data-tg-on="Public" for="cb5"></label>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Post</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Gallery  -->
+
+
+                                <div class="modal fade" id="galleryModal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Upload Gallery</h4>
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="POST" enctype="multipart/form-data" action="{% url 'upload_gallery' %}">
+                                                    {% csrf_token %}
+                                                    <div class="form-group">
+                                                        <label for="galleryTitle">Gallery Title:</label>
+                                                        <input type="text" class="form-control" id="galleryTitle" name="gallery_title">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="galleryDescription">Gallery Description:</label>
+                                                        <textarea class="form-control" id="galleryDescription" name="gallery_description" rows="4"></textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="galleryFile">Gallery File:</label>
+                                                        <input type="file" class="form-control" id="galleryFile" name="gallery_file">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Upload</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Video -->
+
+                                <div class="modal fade" id="videoModal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Upload Video</h4>
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="POST" enctype="multipart/form-data" action="{% url 'upload_video' %}">
+                                                    {% csrf_token %}
+                                                    <div class="form-group">
+                                                        <label for="videoTitle">Video Title:</label>
+                                                        <input type="text" class="form-control" id="videoTitle" name="video_title">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="videoDescription">Video Description:</label>
+                                                        <textarea class="form-control" id="videoDescription" name="video_description" rows="4"></textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="videoFile">Video File:</label>
+                                                        <input type="file" class="form-control-file" id="videoFile" name="video_file">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Upload</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Location Modal -->
+                                <div class="modal fade" id="locationModal" tabindex="-1" role="dialog" aria-labelledby="locationModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="locationModalLabel">Add Location</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Form to add location -->
+                                                <form method="POST" action="{% url 'add_location' %}">
+                                                    {% csrf_token %}
+                                                    <div class="form-group">
+                                                        <label for="locationName">Location Name:</label>
+                                                        <input type="text" class="form-control" id="locationName" name="location_name" placeholder="Enter location name">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="gpsCoordinates">GPS Coordinates:</label>
+                                                        <input type="text" class="form-control" id="gpsCoordinates" name="gps_coordinates" placeholder="Enter GPS coordinates">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Add Location</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+    
+    
+                            </div>
+    
+                        </div>
+    
+                     {% include 'post.html' %}
+                    </div> 
+                   
+                </div>
+                 
+    
+                <div class="home-right">
+
+
+                        <div class="messenger">
+                            <div class="messenger-search">
+                                <i class="fa-solid fa-user-group"></i>
+                                <h4>Messenger</h4>
+
+                            </div>
+                            <ul>
+                                {% for friend in friend_profiles %}
+                                    <a href="{% url 'friends' id=friend.id %}">
+                                        <li>
+                                            <img src="{{ friend.profile_picture.url }}" alt="user">
+                                            <b>{{ friend.full_name }}<span>Online</span></b>
+                                            <i class="fa-brands fa-facebook-messenger"></i>
+                                        </li>
+                                    </a>
+
+                                {% endfor %}
+
+
+
+                                <button class="see-more-btn">See more <i class="fa-solid fa-angle-down"></i></button>
+                            </ul>
+
+
+                        </div>
+
+
+                </div>
+
+    
+    
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="{% static 'Deploy/assets/script.js' %}"></script>
+   
+
+    <script src="{% static 'Deploy/assets/script2.js' %}"></script>
+
+</body>
+</html>

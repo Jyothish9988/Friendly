@@ -1,0 +1,28 @@
+<div class="comments-section" id="commentsSection{{ post.id }}" style="display: none;">
+    {% for comment in comments %}
+    <div class="comment">
+            <img src="profile_pictures/{{ comment.user.userProfile.profile_picture.url }}" alt="commenter profile image">
+        <p>{{ comment.content }}</p>
+        <div class="comment-interactions">
+            <span class="comment-like-btn">Like</span>
+            <span class="comment-reply-btn">Reply</span>
+        </div>
+    </div>
+    <!-- Replies -->
+    {% for reply in comment.replies.all %}
+    <div class="comment comment-reply">
+        <!-- Similar check for UserProfile and profile_picture -->
+        {% if reply.user.userprofile.profile_picture %}
+            <img src="{{ reply.user.userprofile.profile_picture.url }}" alt="replier profile image">
+        {% else %}
+            <img src="{% static 'path/to/default/image.jpg' %}" alt="Default Profile Image">
+        {% endif %}
+        <p>{{ reply.content }}</p>
+        <div class="comment-interactions">
+            <span class="comment-like-btn">Like</span>
+            <span class="comment-reply-btn">Reply</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+</div>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+  
+</head>
+<body>
+    <div class="chat-container">
+        
+        <div class="chat-window">
+            <div class="chat-header">
+                <div class="chat-user">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <p>Chole Adams <span>online now</span></p>
+                </div>
+                <div class="chat-actions">
+                    <button>📞</button>
+                    <button>➕</button>
+                    <button>⋮</button>
+                </div>
+            </div>
+            <div class="chat-messages">
+                <!-- Example of how messages might be populated dynamically -->
+                {% for message in messages %}
+                <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                    {% if message.content %}
+                    <p>{{ message.content }}</p>
+                    {% endif %}
+                    {% if message.image %}
+                    <img src="{{ message.image.url }}" alt="Image">
+                    {% endif %}
+                    {% if message.file %}
+                    <a href="{{ message.file.url }}">Download File</a>
+                    {% endif %}
+                    {% if message.video %}
+                    <video controls>
+                        <source src="{{ message.video.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    {% endif %}
+                    <span class="message-time">{{ message.timestamp }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="chat-input">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="text" name="content" placeholder="Type your message and press enter..." required>
+                    <button type="submit">😊</button>
+                    <button type="button">🎤</button>
+                    <button type="button">📎</button>
+                    <button type="button">📸</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatInput = document.querySelector('.chat-input input[name="content"]');
+            const chatForm = document.querySelector('.chat-input form');
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    chatForm.submit();
+                }
+            });
+
+            const searchBar = document.getElementById('search-bar');
+            const contactList = document.getElementById('contact-list');
+
+            searchBar.addEventListener('input', () => {
+                const filter = searchBar.value.toLowerCase();
+                const contacts = contactList.getElementsByClassName('contact');
+                Array.from(contacts).forEach(contact => {
+                    const contactName = contact.querySelector('.contact-name').textContent.toLowerCase();
+                    if (contactName.includes(filter)) {
+                        contact.style.display = 'flex';
+                    } else {
+                        contact.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
