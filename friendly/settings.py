@@ -12,8 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cse!wo0lt6qti^%6x_#*$r-)b(nw22jfg7^fe3hoj^a_0%!l!+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-WSGI_APPLICATION = 'api.wsgi.app'
+DEBUG = True
 
 
 # Application definition
@@ -60,38 +59,22 @@ TEMPLATES = [
     },
 ]
 
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "friendly/static")]
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "friendly/staticfiles")
+WSGI_APPLICATION = 'friendly.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-from decouple import config
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_NAME'),
-        'USER': config('POSTGRES_USER'),
-        'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': config('POSTGRES_HOST'),
-        'PORT': config('POSTGRES_PORT'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -136,5 +119,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ...
 
-ALLOWED_HOSTS = ['.vercel.app','.now.sh ','127.0.0.1','localhost'] # Allow *.vercel.app
+ALLOWED_HOSTS = [] # Allow *.vercel.app
 
