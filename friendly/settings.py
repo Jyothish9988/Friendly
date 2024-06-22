@@ -74,17 +74,25 @@ STATIC_ROOT = os.path.join(BASE_DIR, "friendly/staticfiles")
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+from decouple import config
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'URL': 'postgresql://postgres:niVDsqAPWbPHFqdXfTvXnlETKxCvgFuP@monorail.proxy.rlwy.net:31243/railway',
-        'NAME': 'PGDATABASE',
-        'USER': 'postgres',
-        'PASSWORD': 'niVDsqAPWbPHFqdXfTvXnlETKxCvgFuP',
-        'HOST': 'monorail.proxy.rlwy.net',
-        'PORT': 31243,
+        'NAME': config('POSTGRES_NAME'),
+        'USER': config('POSTGRES_USER'),
+        'PASSWORD': config('POSTGRES_PASSWORD'),
+        'HOST': config('POSTGRES_HOST'),
+        'PORT': config('POSTGRES_PORT'),
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
+
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
