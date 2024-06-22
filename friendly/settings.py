@@ -60,12 +60,10 @@ TEMPLATES = [
     },
 ]
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-]
 
-WSGI_APPLICATION = 'friendly.wsgi.application'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "friendly/static")]
+STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "friendly/staticfiles")
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

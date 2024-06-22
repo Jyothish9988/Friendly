@@ -2,12 +2,27 @@
   "version": 2,
   "builds": [
     {
-      "src": "manage.py collectstatic --noinput",
-      "use": "@now/python"
+      "src": "friendly/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
+    },
+    {
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "ui/staticfiles"
+      }
     }
   ],
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "manage.py" }
-  ]
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "friendly/wsgi.py"
+    }
+  ],
+  "outputDirectory": "ui/staticfiles"
 }
