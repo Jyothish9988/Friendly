@@ -1,4 +1,5 @@
 #!/bin/bash
-python3.9 -m venv venv
+source venv/bin/activate  # Activate virtual environment
 pip install -r requirements.txt
 python manage.py collectstatic --noinput
+deactivate  # Deactivate virtual environment
