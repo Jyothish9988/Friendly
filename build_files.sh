@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Activate virtual environment
-venv\Scripts\activate  # Adjust path if necessary for your project structure
+# Activate virtual environment (assuming venv is your virtual environment directory)
+source venv/Scripts/activate
 
 # Install dependencies
 pip install -r requirements.txt
