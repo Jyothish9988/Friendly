@@ -13,6 +13,7 @@ SECRET_KEY = 'django-insecure-cse!wo0lt6qti^%6x_#*$r-)b(nw22jfg7^fe3hoj^a_0%!l!+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+WSGI_APPLICATION = 'api.wsgi.app'
 
 
 # Application definition
