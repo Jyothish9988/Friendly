@@ -1,15 +1,13 @@
 #!/bin/bash
 
-
 # Activate virtual environment
-source /absolute/path/to/venv/bin/activate  # Replace with actual absolute path to your virtual environment
+venv\Scripts\activate  # Adjust path if necessary for your project structure
 
 # Install dependencies
-/absolute/path/to/venv/bin/pip install -r requirements.txt
+pip install -r requirements.txt
 
-# Collect static files
-/absolute/path/to/venv/bin/python manage.py collectstatic --noinput
+# Collect static files (Django specific)
+python manage.py collectstatic --noinput
 
 # Deactivate virtual environment
 deactivate
-pip3.9 install -r requirements.txt
