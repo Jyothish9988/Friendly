@@ -2,23 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "friendly/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.9"
-      },
-      "installCommand": "pip install -r requirements.txt"
+      "src": "manage.py collectstatic --noinput",
+      "use": "@now/python"
     }
   ],
   "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "friendly/wsgi.py"
-    }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "manage.py" }
   ]
 }
