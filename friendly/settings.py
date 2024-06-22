@@ -119,5 +119,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ...
 
-ALLOWED_HOSTS = ['.vercel.app'] # Allow *.vercel.app
+ALLOWED_HOSTS = [] # Allow *.vercel.app
 
