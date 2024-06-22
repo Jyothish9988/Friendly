@@ -1,1 +1,6 @@
-pip install Pillow nudenet matplotlib opencv-python-headless django-background-tasks
+Pillow
+nudenet
+matplotlib
+opencv-python-headless
+django-background-tasks
+Django==3.2
