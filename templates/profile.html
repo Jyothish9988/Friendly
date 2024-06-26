@@ -9,7 +9,191 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'Profile/style.css' %}">
 </head>
+    <style>
+        /* Custom styles for fixed card size and Facebook-like appearance */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
 
+
+        .profile-header {
+            background-color: #4267B2;
+            color: #fff;
+            padding: 20px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .profile-header .logoBox a {
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .profile-info img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 20px;
+            object-fit: cover;
+        }
+
+        .profile-info h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .profile-info p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .profile-info .btn {
+            margin-right: 10px;
+        }
+
+        .profile-details {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .profile-details h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .profile-details p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .posts {
+            padding: 20px;
+        }
+
+        .post-card {
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-card .top {
+            position: relative;
+            width: 100%;
+            height: 400px; /* Fixed height for each post card */
+            overflow: hidden;
+        }
+
+        .post-card .top img,
+        .post-card .top video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .post-card:hover .top img,
+        .post-card:hover .top video {
+            transform: scale(1.1);
+        }
+
+        .post-card .like-comment {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        .post-card .like-comment i {
+            font-size: 24px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .post-card .like-comment .comment {
+            margin-left: 10px;
+        }
+
+        .post-card .bottom {
+            padding: 15px 20px; /* Adjust padding to fit content properly */
+            background-color: #f9f9f9;
+        }
+
+        .post-card h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .post-card .author {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-card .author .profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-size: cover;
+            margin-right: 10px;
+        }
+
+        .post-card .author .name {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .post-card .intro {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .post-card .info {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .post-card .info p {
+            margin-right: 20px;
+        }
+
+        .post-card .post-images {
+            margin-top: 10px;
+        }
+
+        .post-card .post-images img,
+        .post-card .post-images video {
+            width: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .post-card .comments {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
 <body>
 
 <div class="profile-container">
@@ -39,43 +223,47 @@
     </div>
 
 
-    <div class="posts">
-        <h2>Recent Photos</h2>
+     <div class="posts">
+        <h2>Recent Posts</h2>
         <div class="post-grid">
-            <div class="post">
-                <img src="https://images.unsplash.com/photo-1469594292607-7bd90f8d3ba4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80" alt="Post Image">
-                <h3>Sunset in the Mountains</h3>
-                <p>Captured this beautiful sunset during my hike last weekend.</p>
-                <div class="likes">
-                    <i class="fas fa-heart"></i> 120 Likes
+            {% for post in posts %}
+            <div class="post-card">
+                <div class="top">
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                    {% elif post.video %}
+                    <video src="{{ post.video.url }}" controls></video>
+                    {% endif %}
+                    <div class="like-comment">
+                        <i class="fas fa-thumbs-up"></i>
+                        <i class="far fa-comment"></i>
+                    </div>
+                </div>
+                <div class="bottom">
+                    <h2><a href="#">{{ post.title }}</a></h2>
+                    <div class="author">
+                        <div class="profile" style="background-image: url('{{ post.get_uploaded_by_profile_picture }}');"></div>
+                        <p class="name">By <a href="#">{{ post.uploaded_by.username }}</a></p>
+                    </div>
+                    <p class="intro">{{ post.description }}</p>
+                    <div class="info">
+                        <p><i class="far fa-clock"></i> {{ post.uploaded_at }}</p>
+                        <p><i class="far fa-comment"></i> <a href="#"> comments</a></p>
+                    </div>
+                    {% if post.lim == 'yes' %}
+                        <div class="explicit-content">
+                            <p>Explicit Content</p>
+                        </div>
+                    {% endif %}
+                    <div class="comments">
+                        <!-- Render comments here -->
+                    </div>
                 </div>
             </div>
-            <div class="post">
-                <img src="https://images.unsplash.com/photo-1493571716545-b559a19edd14?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80" alt="Post Image">
-                <h3>Cityscape</h3>
-                <p>The city looks amazing from this viewpoint.</p>
-                <div class="likes">
-                    <i class="fas fa-heart"></i> 95 Likes
-                </div>
-            </div>
-            <div class="post">
-                <img src="https://images.unsplash.com/photo-1453791052107-5c843da62d97?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80" alt="Post Image">
-                <h3>Mountain Adventure</h3>
-                <p>A thrilling mountain adventure with breathtaking views.</p>
-                <div class="likes">
-                    <i class="fas fa-heart"></i> 200 Likes
-                </div>
-            </div>
-            <div class="post">
-                <img src="https://images.unsplash.com/photo-1475724017904-b712052c192a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80" alt="Post Image">
-                <h3>Serene Lake</h3>
-                <p>Found peace and tranquility at this lake.</p>
-                <div class="likes">
-                    <i class="fas fa-heart"></i> 150 Likes
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
+
 </div>
 <!-- Modal for Profile -->
 <div class="container mt-5">

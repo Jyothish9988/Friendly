@@ -61,7 +61,6 @@ def user_logout(request):
     logout(request)
     return redirect('user_login')
 
-
 @login_required(login_url='/user_login')
 def dashboard(request):
     user = request.user
@@ -83,13 +82,16 @@ def dashboard(request):
         Q(is_public=True) | Q(uploaded_by__username__in=friend_usernames)
     ).order_by('-uploaded_at')
 
+    # Check if the current user has liked each post
+    for post in posts:
+        post.has_liked = Like.objects.filter(user=user, post=post).exists()
+
     return render(request, 'dashboard.html', {
         'profile': profile,
         'friend_profiles': friend_profiles,
         'messages': messages.get_messages(request),
         'posts': posts,
     })
-
 
 class SearchResultsView(ListView):
     model = UserProfile
@@ -107,25 +109,24 @@ class SearchResultsView(ListView):
 @login_required(login_url='/user_login')
 def profile(request):
     user = request.user
-    user_profile = request.user
     profile = get_object_or_404(UserProfile, username=user.id)
     details = UserProfile.objects.filter(username=user)
 
+    # Check if profile details are complete, show an error message if not
     if not profile.full_name or not profile.phone_number:
         messages.error(request, 'Please update your profile details.')
-    posts = Post.objects.filter(is_public=True).order_by('-uploaded_at')
 
+    # Fetch public posts for display
+    posts = Post.objects.filter(is_public=True).order_by('-uploaded_at')
+    mypost = Post.objects.filter(uploaded_by=user.id).order_by('-uploaded_at')
     return render(request, 'profile.html', {
         'profile': profile,
         'messages': messages.get_messages(request),
         'posts': posts,
         'details': details,
-        'user_profile': user_profile,
+        'user': user,
+        'mypost': mypost,
     })
-
-
-
-    pass
 
 
 @login_required(login_url='/user_login')
@@ -187,6 +188,7 @@ def upload_video(request):
             )
             messages.success(request, 'Video uploaded successfully.')
             video_classify_nudity(post.id)
+            classify_explicit(post.id)
             return redirect('dashboard')
     else:
         form = VideoUploadForm()

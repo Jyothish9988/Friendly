@@ -33,7 +33,7 @@
             </div>
             {% elif post.lim == 'yes' %}
             <div class="post-images">
-                <a href="{% url 'video' id=post.id %}" >Explicit Content</a>            
+                <a href="{% url 'video' id=post.id %}" >Explicit Content</a>
             </div>
             {% endif %}
         {% elif post.file_type == 'video' %}
