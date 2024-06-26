@@ -103,7 +103,7 @@ def video_classify_nudity(post_id):
                         logger.error(f"Error detecting nudity for Post {post_id}: {detection_error}")
                         return
 
-                    ignore_classes = ['FACE_MALE', 'FACE_FEMALE', 'FEMALE_BREAST_COVERED', 'ARMPITS_EXPOSED',
+                    ignore_classes = ['FACE_MALE', 'FACE_FEMALE', 'ARMPITS_EXPOSED',
                                       'FEET_EXPOSED', 'FEET_COVERED']
 
                     for d in detections:

@@ -29,12 +29,11 @@ def register(request):
             user = form.save()
             UserProfile.objects.create(username=user, profile_picture='dummy.jpg')
             return redirect("user_login")
+        else:
+            return render(request, 'register.html', {'form': form})
     else:
         form = CreateUserForm()
-
-    context = {'registerform': form}
-    return render(request, 'register.html', context=context)
-
+    return render(request, 'register.html', {'form': form})
 
 def user_login(request):
     if request.method == 'POST':
@@ -230,11 +229,11 @@ def create_post(request):
             post.uploaded_by = request.user
             post.file_type = 'post'
 
-            try:
-                user_profile = UserProfile.objects.get(username=request.user)
-                post.profile_picture = user_profile.profile_picture
-            except UserProfile.DoesNotExist:
-                post.profile_picture = None
+            # try:
+            #     user_profile = UserProfile.objects.get(username=request.user)
+            #     post.profile_picture = user_profile.profile_picture
+            # except UserProfile.DoesNotExist:
+            #     post.profile_picture = None
 
             post.save()
             messages.success(request, 'Post created successfully.')

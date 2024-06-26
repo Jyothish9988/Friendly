@@ -5,12 +5,27 @@ from django.contrib.auth.models import User
 from django.forms.widgets import PasswordInput, TextInput
 from django import forms
 from .models import Post, UserProfile, Comment
+from django.core.exceptions import ValidationError
 
 
 class CreateUserForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Email already exists")
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Username already exists")
+        return username
 
 
 class LoginForm(AuthenticationForm):
@@ -51,5 +66,3 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['content']
-
-

@@ -4,23 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post Page</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         /* Your CSS styles here */
+        .map {
+            height: 400px; /* Adjust map height as needed */
+            width: 100%; /* Full width */
+        }
     </style>
 </head>
 <body>
     {% for post in posts %}
     <div class="post-container" id="post{{ post.id }}">
         <div class="post-title">
-            <img src="/{{ post.profile_picture }}" alt="user picture">
+            <img src="{{ post.uploaded_by.userprofile.profile_picture.url }}" alt="user picture">
             <ul>
                 <li><h3>{{ post.uploaded_by }}</h3></li>
                 <li><span>{{ post.uploaded_at }}</span></li>
             </ul>
-             {% if post.lim == 'no' %}
-            <p>{{ post.title }}</p>
-            <p> {{ post.description }}</p>
+            {% if post.lim == 'no' or post.lim == 'new' %}
+            <div>
+                <span style="font-weight: bold; display: block; margin-bottom: 5px;">{{ post.title }}</span>
+                <span>{{ post.description }}</span>
+            </div>
             {% else %}
             <p>Explicit</p>
             {% endif %}
@@ -29,7 +36,7 @@
         {% if post.file_type == 'gallery' %}
             {% if post.lim == 'no' %}
             <div class="post-images">
-                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="height:400px;" class="double-tap-to-like">
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="height:400px; width:100%;" class="double-tap-to-like">
             </div>
             {% elif post.lim == 'yes' %}
             <div class="post-images">
@@ -41,9 +48,27 @@
             <video src="{{ post.video.url }}" controls style="height:400px;" class="double-tap-to-like"></video>
             {% elif post.lim == 'yes' %}
             <div class="post-images">
-               <a href="{% url 'video' id=post.id %}" >Explicit Content</a>
+                <a href="{% url 'video' id=post.id %}" >Explicit Content</a>
             </div>
             {% endif %}
+        {% elif post.file_type == 'location' %}
+            <!-- Display the location on the map -->
+            <div id="map{{ post.id }}" class="map"></div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    var location = "{{ post.location }}".split(',');
+                    var latitude = parseFloat(location[0]);
+                    var longitude = parseFloat(location[1]);
+                    var map{{ post.id }} = L.map('map{{ post.id }}').setView([latitude, longitude], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map{{ post.id }});
+                    // Optionally, add a marker at the location
+                    L.marker([latitude, longitude]).addTo(map{{ post.id }})
+                        .bindPopup("{{ post.title }}")
+                        .openPopup();
+                });
+            </script>
         {% endif %}
 
         <div class="post-interactions">
@@ -60,7 +85,6 @@
                     <button class="view-comments-btn" data-post-id="{{ post.id }}">View Comments</button>
                 </li>
             </ul>
-            <div class="views-count">1000 views</div>
         </div>
         <div class="comment-field">
             <input type="text" placeholder="Write a comment..." id="commentInput{{ post.id }}">
@@ -177,5 +201,7 @@
             });
         });
     </script>
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>

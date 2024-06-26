@@ -193,11 +193,12 @@
                                                         <label for="description">Description:</label>
                                                         <textarea class="form-control" id="description" name="description" rows="4" style="height: 134px;"></textarea>
                                                     </div>
-                                                    <div class="checkbox-wrapper-10">
-                                                        <input class="tgl tgl-flip" id="cb5" type="checkbox" name="is_public" checked />
-                                                        <label class="tgl-btn" data-tg-off="Private" data-tg-on="Public" for="cb5"></label>
-                                                    </div>
-                                                    <button type="submit" class="btn btn-primary">Post</button>
+                                                     
+
+                                                                <button type="submit" class="btn btn-primary">Post</button>
+
+                                                
+
                                                 </form>
                                             </div>
                                         </div>
@@ -230,6 +231,7 @@
                                                         <input type="file" class="form-control" id="galleryFile" name="gallery_file">
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Upload</button>
+
                                                 </form>
                                             </div>
                                         </div>
@@ -261,6 +263,7 @@
                                                         <input type="file" class="form-control-file" id="videoFile" name="video_file">
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Upload</button>
+
                                                 </form>
                                             </div>
                                         </div>
@@ -287,9 +290,11 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="gpsCoordinates">GPS Coordinates:</label>
-                                                        <input type="text" class="form-control" id="gpsCoordinates" name="gps_coordinates" placeholder="Enter GPS coordinates">
+                                                            <input type="text" class="form-control" id="gpsCoordinates" name="gps_coordinates" placeholder="Enter GPS coordinates" readonly>
+
                                                     </div>
-                                                    <button type="submit" class="btn btn-primary">Add Location</button>
+                                                    <button type="submit" class="btn btn-primary">Upload</button>
+
                                                 </form>
                                             </div>
                                         </div>
@@ -356,6 +361,28 @@
 
     <script src="{% static 'Deploy/assets/script.js' %}"></script>
    
+     <script>
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // Update the value of the input field with id "gpsCoordinates"
+            document.getElementById("gpsCoordinates").value = `${latitude}, ${longitude}`;
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Call getLocation when the page loads
+        window.onload = function() {
+            getLocation();
+        };
+    </script>
 
     <script src="{% static 'Deploy/assets/script2.js' %}"></script>
 
