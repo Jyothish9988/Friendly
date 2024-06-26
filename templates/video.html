@@ -1,6 +1,28 @@
 {% include 'header.html' %}
 <body>
-{{age}}
+<style>
+        .container {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            padding: 20px;
+            max-width: 400px;
+            font-family: Arial, sans-serif;
+        }
+        .container img {
+            max-width: 100px;
+            margin-bottom: 20px;
+        }
+        .container h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .container p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+</style>
 {% if age and age > 18 %}
 
     <div class="post-container" id="post{{ post.id }}">
@@ -75,8 +97,21 @@
             {% endfor %}
         </div>
     </div>
-{% else %}    
-<p>Not allowed to view</p>
+{% else %}
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+    <div class="container">
+        <img src="https://png.pngtree.com/png-vector/20240201/ourmid/pngtree-monster-character-clip-art-png-image_11528822.png" alt="Monster Image">
+        <h1>Oops!</h1>
+        <p>We can't seem to access the page due to age restrictions.</p>
+    </div>
 {% endif %}
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
