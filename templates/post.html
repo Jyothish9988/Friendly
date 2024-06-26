@@ -67,19 +67,20 @@
             <button class="add-comment-btn" data-post-id="{{ post.id }}"><i class="fa fa-paper-plane"></i></button>
         </div>
         <div class="comments-section" id="commentsSection{{ post.id }}" style="display: none;">
+            <!-- Comments for this post -->
             {% for comment in post.comments.all %}
             <div class="comment">
-                <img src="{{ comment.user.profile_picture }}" alt="commenter profile image">
+                <img src="{{ comment.user.userprofile.profile_picture.url }}" alt="commenter profile image">
                 <p>{{ comment.content }}</p>
                 <div class="comment-interactions">
                     <span class="comment-like-btn">Like</span>
                     <span class="comment-reply-btn">Reply</span>
                 </div>
             </div>
-            <!-- Replies -->
+            <!-- Replies for each comment -->
             {% for reply in comment.replies.all %}
             <div class="comment comment-reply">
-                <img src="{{ reply.user.profile_picture }}" alt="replier profile image">
+                <img src="{{ reply.user.userprofile.profile_picture.url }}" alt="replier profile image">
                 <p>{{ reply.content }}</p>
                 <div class="comment-interactions">
                     <span class="comment-like-btn">Like</span>
@@ -91,6 +92,7 @@
         </div>
     </div>
     {% endfor %}
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function(){

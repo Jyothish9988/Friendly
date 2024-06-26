@@ -86,6 +86,7 @@ def dashboard(request):
     for post in posts:
         post.has_liked = Like.objects.filter(user=user, post=post).exists()
 
+
     return render(request, 'dashboard.html', {
         'profile': profile,
         'friend_profiles': friend_profiles,
