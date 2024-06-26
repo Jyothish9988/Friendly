@@ -51,7 +51,7 @@
                 <li>
                     <button class="like-btn" data-post-id="{{ post.id }}" id="likeBtn{{ post.id }}">
                         <span class="heart" id="heartIcon{{ post.id }}">
-                            <i class="fa fa-heart" id="likeIcon{{ post.id }}" style="color: {% if post.has_liked %}red{% else %}white{% endif %};"></i>
+                            <i class="fa fa-heart" id="likeIcon{{ post.id }}" style="color: {% if post.has_liked %}red{% else %}dbe1d9{% endif %};"></i>
                         </span>
                         <span class="like-count" id="likeCount{{ post.id }}">{{ post.likes.count }}</span> Likes
                     </button>
