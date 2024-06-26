@@ -36,6 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'friendly.urls'
@@ -118,6 +119,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://github.com/jayhale/vercel-django-example/blob/main/vercel_app/settings.py#L28
 
 # ...
+ALLOWED_HOSTS = [
+    'localhost:8080',
+    '127.0.0.1',
+    'eeee-123-63-2-2.ngrok-free.app'
+]
 
-ALLOWED_HOSTS = [] # Allow *.vercel.app
+CSRF_TRUSTED_ORIGINS = [
+    'https://eeee-123-63-2-2.ngrok-free.app',
+    'https://15dc-123-63-2-2.ngrok-free.app'
+]
 
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}

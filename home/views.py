@@ -1,6 +1,5 @@
 import json
 from datetime import date, datetime
-
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView, ListView
@@ -11,9 +10,8 @@ from .forms import GalleryUploadForm, VideoUploadForm, LocationForm, PostForm, C
 from django.contrib import messages
 from .models import Post, UserProfile, FriendRequest
 from django.db.models import Q
-from .tasks import classify_nudity, video_classify_nudity
+from .tasks import classify_nudity, video_classify_nudity, classify_explicit
 from django.http import HttpResponseServerError
-from .tasks import classify_nudity  # Import your background task
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
@@ -126,6 +124,10 @@ def profile(request):
     })
 
 
+
+    pass
+
+
 @login_required(login_url='/user_login')
 def upload_gallery(request):
     try:
@@ -153,7 +155,7 @@ def upload_gallery(request):
 
                 # Call the classify_nudity function asynchronously
                 classify_nudity(post.id)  # Assuming 'post.id' is the ID of the created post
-
+                classify_explicit(post.id)
                 return redirect('dashboard')
         else:
             form = GalleryUploadForm()
@@ -233,6 +235,7 @@ def create_post(request):
 
             post.save()
             messages.success(request, 'Post created successfully.')
+            classify_explicit(post.id)
             return redirect('dashboard')
     else:
         form = PostForm()

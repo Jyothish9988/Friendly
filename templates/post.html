@@ -18,7 +18,12 @@
                 <li><h3>{{ post.uploaded_by }}</h3></li>
                 <li><span>{{ post.uploaded_at }}</span></li>
             </ul>
-            <p>{{ post.title }} {{ post.description }}</p>
+             {% if post.lim == 'no' %}
+            <p>{{ post.title }}</p>
+            <p> {{ post.description }}</p>
+            {% else %}
+            <P>Explicit</P>
+            {% endif %}
         </div>
 
         {% if post.file_type == 'gallery' %}

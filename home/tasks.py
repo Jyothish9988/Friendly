@@ -128,7 +128,8 @@ def video_classify_nudity(post_id):
                     logger.error(f"Error updating 'lim' field for Post {post_id}: {e}")
 
                 if nudity_detected:
-                    logger.info(f"Explicit nudity detected in the video for Post {post_id}. Nudity Class: {nudity_class}")
+                    logger.info(
+                        f"Explicit nudity detected in the video for Post {post_id}. Nudity Class: {nudity_class}")
                 else:
                     logger.info(f"No explicit nudity detected in the video for Post {post_id}.")
 
@@ -143,3 +144,55 @@ def video_classify_nudity(post_id):
                 except Exception as cleanup_error:
                     logger.error(f"Error while cleaning up frame files: {cleanup_error}")
 
+
+import csv
+import urllib.request
+from django.core.exceptions import ValidationError
+from django.db import transaction
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Fetch the CSV content from the URL
+url = 'https://raw.githubusercontent.com/surge-ai/profanity/main/profanity_en.csv'
+response = urllib.request.urlopen(url)
+text = response.read().decode('utf-8')
+
+# Read the CSV content
+reader = csv.reader(text.splitlines())
+profanity_list = [row[0].lower() for row in reader]
+
+def is_explicit(word):
+    return word.lower() in profanity_list
+
+def classify_explicit(post_id):
+    try:
+        from .models import Post
+
+        with transaction.atomic():
+            post = Post.objects.select_for_update().get(id=post_id)
+
+            logger.info(f"Checking title and description for Post {post_id}")
+
+            title = post.title
+            description = post.description
+
+            title_explicit = any(is_explicit(word) for word in title.split())
+            description_explicit = any(is_explicit(word) for word in description.split())
+
+            explicit_detected = title_explicit or description_explicit
+
+            logger.info(f"Explicit content detected for Post {post_id}: {explicit_detected}")
+
+            new_lim = 'yes' if explicit_detected else 'no'
+            try:
+                post.lim = new_lim
+                post.report = 'Explicit Content Detected' if explicit_detected else ''
+                post.full_clean()
+                post.save()
+                logger.info(f"'lim' field updated for Post {post_id}")
+            except ValidationError as e:
+                logger.error(f"Error updating 'lim' field for Post {post_id}: {e}")
+
+    except Exception as e:
+        logger.error(f"Error in classify_explicit task: {e}")
