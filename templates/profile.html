@@ -18,7 +18,6 @@
             padding: 0;
         }
 
-
         .profile-header {
             background-color: #4267B2;
             color: #fff;
@@ -203,8 +202,6 @@
         </div>
     </div>
     <div class="profile-info">
-
-
         <img src="{{ profile.profile_picture.url }}" alt="User Image">
         <div>
             <h1>{{ profile.full_name }}</h1>
@@ -222,49 +219,189 @@
         </p>
     </div>
 
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="posts-tab" data-toggle="tab" href="#posts" role="tab" aria-controls="posts" aria-selected="true">Posts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="videos-tab" data-toggle="tab" href="#videos" role="tab" aria-controls="videos" aria-selected="false">Videos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="images-tab" data-toggle="tab" href="#images" role="tab" aria-controls="images" aria-selected="false">Images</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="locations-tab" data-toggle="tab" href="#locations" role="tab" aria-controls="locations" aria-selected="false">Locations</a>
+        </li>
+    </ul>
 
-     <div class="posts">
-        <h2>Recent Posts</h2>
-        <div class="post-grid">
-            {% for post in mypost %}
-            <div class="post-card">
-                <div class="top">
-                    {% if post.image %}
-                    <img src="{{ post.image.url }}" alt="{{ post.title }}">
-                    {% elif post.video %}
-                    <video src="{{ post.video.url }}" controls></video>
-                    {% endif %}
-                    <div class="like-comment">
-                        <i class="fas fa-thumbs-up"></i>
-                        <i class="far fa-comment"></i>
-                    </div>
-                </div>
-                <div class="bottom">
-                    <h2><a href="#">{{ post.title }}</a></h2>
-                    <div class="author">
-                        <div class="profile" style="background-image: url('{{ post.get_uploaded_by_profile_picture }}');"></div>
-                        <p class="name">By <a href="#">{{ post.uploaded_by.username }}</a></p>
-                    </div>
-                    <p class="intro">{{ post.description }}</p>
-                    <div class="info">
-                        <p><i class="far fa-clock"></i> {{ post.uploaded_at }}</p>
-                        <p><i class="far fa-comment"></i> <a href="#"> comments</a></p>
-                    </div>
-                    {% if post.lim == 'yes' %}
-                        <div class="explicit-content">
-                            <p>Explicit Content</p>
+    <!-- Tab Content -->
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+            <div class="posts">
+                <h2>Recent Posts</h2>
+                <div class="post-grid">
+                    {% for post in mypost %}
+                    <div class="post-card">
+                        <div class="top">
+                            {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                            {% elif post.video %}
+                            <video src="{{ post.video.url }}" controls></video>
+                            {% endif %}
+                            <div class="like-comment">
+                                <i class="fas fa-thumbs-up"></i>
+                                <i class="far fa-comment"></i>
+                            </div>
                         </div>
-                    {% endif %}
-                    <div class="comments">
-                        <!-- Render comments here -->
+                        <div class="bottom">
+                            <h2><a href="#">{{ post.title }}</a></h2>
+                            <div class="author">
+                                <div class="profile" style="background-image: url('{{ post.get_uploaded_by_profile_picture }}');"></div>
+                                <p class="name">By <a href="#">{{ post.uploaded_by.username }}</a></p>
+                            </div>
+                            <p class="intro">{{ post.description }}</p>
+                            <div class="info">
+                                <p><i class="far fa-clock"></i> {{ post.uploaded_at }}</p>
+                                <p><i class="far fa-comment"></i> <a href="#"> comments</a></p>
+                            </div>
+                            {% if post.lim == 'yes' %}
+                                <div class="explicit-content">
+                                    <p>Explicit Content</p>
+                                </div>
+                            {% endif %}
+                            <div class="comments">
+                                <!-- Render comments here -->
+                            </div>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="videos" role="tabpanel" aria-labelledby="videos-tab">
+            <div class="posts">
+                <h2>Recent Videos</h2>
+                <div class="post-grid">
+                    {% for post in mypost %}
+                    {% if post.video %}
+                    <div class="post-card">
+                        <div class="top">
+                            <video src="{{ post.video.url }}" controls></video>
+                            <div class="like-comment">
+                                <i class="fas fa-thumbs-up"></i>
+                                <i class="far fa-comment"></i>
+                            </div>
+                        </div>
+                        <div class="bottom">
+                            <h2><a href="#">{{ post.title }}</a></h2>
+                            <div class="author">
+                                <div class="profile" style="background-image: url('{{ post.get_uploaded_by_profile_picture }}');"></div>
+                                <p class="name">By <a href="#">{{ post.uploaded_by.username }}</a></p>
+                            </div>
+                            <p class="intro">{{ post.description }}</p>
+                            <div class="info">
+                                <p><i class="far fa-clock"></i> {{ post.uploaded_at }}</p>
+                                <p><i class="far fa-comment"></i> <a href="#"> comments</a></p>
+                            </div>
+                            {% if post.lim == 'yes' %}
+                                <div class="explicit-content">
+                                    <p>Explicit Content</p>
+                                </div>
+                            {% endif %}
+                            <div class="comments">
+                                <!-- Render comments here -->
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+            <div class="posts">
+                <h2>Recent Images</h2>
+                <div class="post-grid">
+                    {% for post in mypost %}
+                    {% if post.image %}
+                    <div class="post-card">
+                        <div class="top">
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                            <div class="like-comment">
+                                <i class="fas fa-thumbs-up"></i>
+                                <i class="far fa-comment"></i>
+                            </div>
+                        </div>
+                        <div class="bottom">
+                            <h2><a href="#">{{ post.title }}</a></h2>
+                            <div class="author">
+                                <div class="profile" style="background-image: url('{{ post.get_uploaded_by_profile_picture }}');"></div>
+                                <p class="name">By <a href="#">{{ post.uploaded_by.username }}</a></p>
+                            </div>
+                            <p class="intro">{{ post.description }}</p>
+                            <div class="info">
+                                <p><i class="far fa-clock"></i> {{ post.uploaded_at }}</p>
+                                <p><i class="far fa-comment"></i> <a href="#"> comments</a></p>
+                            </div>
+                            {% if post.lim == 'yes' %}
+                                <div class="explicit-content">
+                                    <p>Explicit Content</p>
+                                </div>
+                            {% endif %}
+                            <div class="comments">
+                                <!-- Render comments here -->
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="locations" role="tabpanel" aria-labelledby="locations-tab">
+            <div class="posts">
+                <h2>Recent Locations</h2>
+                <div class="post-grid">
+                    {% for post in mypost %}
+                    {% if post.location %}
+                    <div class="post-card">
+                        <div class="top">
+                            <img src="https://maps.googleapis.com/maps/api/staticmap?center={{ post.location.latitude }},{{ post.location.longitude }}&zoom=15&size=600x400&key=YOUR_API_KEY" alt="Location">
+                            <div class="like-comment">
+                                <i class="fas fa-thumbs-up"></i>
+                                <i class="far fa-comment"></i>
+                            </div>
+                        </div>
+                        <div class="bottom">
+                            <h2><a href="#">{{ post.title }}</a></h2>
+                            <div class="author">
+                                <div class="profile" style="background-image: url('{{ post.get_uploaded_by_profile_picture }}');"></div>
+                                <p class="name">By <a href="#">{{ post.uploaded_by.username }}</a></p>
+                            </div>
+                            <p class="intro">{{ post.description }}</p>
+                            <div class="info">
+                                <p><i class="far fa-clock"></i> {{ post.uploaded_at }}</p>
+                                <p><i class="far fa-comment"></i> <a href="#"> comments</a></p>
+                            </div>
+                            {% if post.lim == 'yes' %}
+                                <div class="explicit-content">
+                                    <p>Explicit Content</p>
+                                </div>
+                            {% endif %}
+                            <div class="comments">
+                                <!-- Render comments here -->
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
+
 <!-- Modal for Profile -->
 <div class="container mt-5">
     <div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
@@ -285,15 +422,12 @@
                                 {% else %}
                                     <img src="https://via.placeholder.com/150" class="card-img profile-picture rounded-circle" alt="Default Profile Picture">
                                 {% endif %}
-
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
                                     <form method="post" action="{% url 'profile_update' user_id=profile.username.id %}" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <i ><input type="file" class="fa-light fa-camera" id="profile_picture" name="profile_picture"></i>
-
-
                                         <div class="form-group">
                                             <label for="username">Username:</label>
                                             <input type="text" class="form-control" id="username" name="username" value="{{ profile.username.username }}" readonly>
